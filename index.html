@@ -6,7 +6,10 @@
   <title id="page-title">AI Assistant Demo — Gym Incubator</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
-  <script src="https://unpkg.com/@vapi-ai/web@2.1.1/dist/vapi.umd.js"></script>
+  <script type="module">
+    import Vapi from 'https://esm.sh/@vapi-ai/web';
+    window._VapiClass = Vapi;
+  </script>
   <style>
     :root {
       --black:     #000000;
@@ -800,7 +803,7 @@
 
     console.log('Vapi object keys:', Object.keys(window.Vapi || {}), typeof window.Vapi);
       try {
-        const VapiSDK = window.Vapi?.default ?? window.Vapi?.Vapi ?? window.Vapi;
+        const VapiSDK = window._VapiClass;
         if (!VapiSDK || typeof VapiSDK !== 'function') throw new Error('Vapi SDK not loaded');
         vapi = new VapiSDK(VAPI_PUBLIC_KEY);
 
