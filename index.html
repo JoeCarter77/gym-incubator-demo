@@ -148,6 +148,15 @@
       font-size: 0.95rem; color: var(--grey);
       line-height: 1.8; font-weight: 300;
     }
+    /* On mobile: hide from right col, show above browser in left col */
+    .intro-cta-right { display: flex; }
+    @media (max-width: 980px) {
+      .intro-cta-right { display: none; }
+      .intro-cta-mobile {
+        display: flex !important;
+        margin-bottom: 4px;
+      }
+    }
 
     /* ── DEMO DISCLAIMER ── */
     .demo-notice {
@@ -745,10 +754,10 @@
         The AI Assistant<br>Behind <span class="lime" id="hero-name">Your Gym</span>
       </h1>
 
-      <!-- Intro message -->
-      <div class="intro-cta fu fu-2">
-        <p class="intro-cta-title">Hi <strong id="hero-firstname">there</strong>, meet your AI employee.</p>
-        <p class="intro-cta-sub">Chat with it. Talk to it.<br>Roleplay real conversations for your business, right now.<br>Tap the icon on your website to choose Chat or Voice and experience your AI employee in action.</p>
+      <!-- Intro message — mobile only (shown above browser on small screens) -->
+      <div class="intro-cta intro-cta-mobile fu fu-2" style="display:none">
+        <p class="intro-cta-title">Hi <strong id="hero-firstname-mobile">there</strong>, meet your AI employee.</p>
+        <p class="intro-cta-sub">Chat with it. Talk to it.<br>Roleplay real conversations for your business, right now.<br>Tap the icon to choose Chat or Voice and experience your AI employee in action.</p>
       </div>
 
       <!-- Browser mockup -->
@@ -809,7 +818,7 @@
               <!-- SCREEN 2: Contact capture -->
               <div class="screen contact-screen" id="screen-contact">
                 <p class="contact-title" id="contact-title">Before we start…</p>
-                <p class="contact-sub">Just your name and email so we can follow up after your chat.</p>
+                <p class="contact-sub">Just your details so we can get back to you!</p>
                 <input class="contact-input" id="contact-name"  type="text"  placeholder="Your first name"   autocomplete="given-name" />
                 <input class="contact-input" id="contact-email" type="email" placeholder="Your email address" autocomplete="email" />
                 <button class="contact-start-btn" id="contact-start-btn" onclick="startFromContact()">Start Chat →</button>
@@ -916,7 +925,7 @@
               </div>
               <div class="screen contact-screen" id="screen-contact-phone">
                 <p class="contact-title" id="contact-title-phone">Before we start…</p>
-                <p class="contact-sub">Just your name and email so we can follow up.</p>
+                <p class="contact-sub">Just your details so we can get back to you!</p>
                 <input class="contact-input" id="contact-name-phone" type="text" placeholder="Your first name" autocomplete="given-name" />
                 <input class="contact-input" id="contact-email-phone" type="email" placeholder="Your email address" autocomplete="email" />
                 <button class="contact-start-btn" id="contact-start-btn-phone" onclick="startFromContactPhone()">Start Chat →</button>
@@ -971,6 +980,13 @@
 
     <!-- ══ RIGHT ══ -->
     <div class="right fu fu-2">
+
+      <!-- Intro message — desktop only (hidden on mobile) -->
+      <div class="intro-cta intro-cta-right">
+        <p class="intro-cta-title">Hi <strong id="hero-firstname">there</strong>, meet your AI employee.</p>
+        <p class="intro-cta-sub">Chat with it. Talk to it.<br>Roleplay real conversations for your business, right now.<br>Tap the icon on your website to choose Chat or Voice and experience your AI employee in action.</p>
+      </div>
+
       <div class="stats">
         <div class="stat"><div class="stat-n">24/7</div><div class="stat-l">Available</div></div>
         <div class="stat"><div class="stat-n">&lt;2s</div><div class="stat-l">Response</div></div>
@@ -1047,12 +1063,12 @@
         `<span class="url-domain">${clean}</span>`;
     }
 
-    // Set personalised firstname in intro
-    if (firstName) {
-      document.getElementById('hero-firstname').textContent = firstName;
-    } else {
-      document.getElementById('hero-firstname').textContent = 'there';
-    }
+    // Set personalised firstname in all intro blocks
+    const fn = firstName || 'there';
+    ['hero-firstname', 'hero-firstname-mobile'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = fn;
+    });
 
     // ── STATE ───────────────────────────────────────────────────────────────────
     let chatOpen     = false;
