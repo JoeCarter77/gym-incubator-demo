@@ -145,7 +145,7 @@
     }
     .intro-cta-title strong { color: var(--lime); }
     .intro-cta-sub {
-      font-size: 0.95rem; color: #bbbbbb;
+      font-size: 0.95rem; color: var(--grey);
       line-height: 1.8; font-weight: 300;
     }
     /* On mobile: hide from right col, show above browser in left col */
@@ -834,7 +834,11 @@
                   <button class="sq" onclick="sendSuggested(this)">How much does it cost?</button>
                   <button class="sq" onclick="sendSuggested(this)">Where are you based?</button>
                   <button class="sq" onclick="sendSuggested(this)">Free trial?</button>
-                </div></div>
+                </div>
+                <div class="cp-sbar" id="cp-sbar" style="display:none">
+                  <div class="sdot"></div>
+                  <span id="cp-sbar-txt">Training on website content…</span>
+                </div>
                 <div class="cp-inp-row">
                   <input class="cp-inp" id="cp-inp" type="text" placeholder="Ask anything…" disabled />
                   <button class="cp-send" id="cp-send" onclick="sendMsg()" disabled>
@@ -935,7 +939,7 @@
                   <button class="sq" onclick="sendSuggestedPhone(this)">How much?</button>
                   <button class="sq" onclick="sendSuggestedPhone(this)">Free trial?</button>
                 </div>
-                <span>Training…</span></div>
+                <div class="cp-sbar" id="cp-sbar-phone" style="display:none"><div class="sdot"></div><span>Training…</span></div>
                 <div class="cp-inp-row">
                   <input class="cp-inp" id="cp-inp-phone" type="text" placeholder="Ask anything…" disabled />
                   <button class="cp-send" id="cp-send-phone" onclick="sendMsgPhone()" disabled>
@@ -1105,8 +1109,8 @@
 
     // ── SCRAPE & TRAIN ──────────────────────────────────────────────────────────
     async function scrapeAndTrain() {
-      const bar = { className: '' }; // sbar removed
-      const txt = { textContent: '' }; // sbar removed
+      const bar = document.getElementById('cp-sbar');
+      const txt = document.getElementById('cp-sbar-txt');
 
       if (!gymUrl) {
         gymContext = `Martial arts gym: ${company}.`;
@@ -1667,3 +1671,4 @@ WHAT TO AVOID:\n- NEVER state a location, city, or address unless it is explicit
   </script>
 </body>
 </html>
+
