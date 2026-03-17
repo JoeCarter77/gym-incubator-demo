@@ -923,9 +923,7 @@
     function loadScreenshot() {
       const ldr = document.getElementById('browser-loading');
       const img = document.getElementById('browser-img');
-
       if (!gymUrl) { ldr.classList.add('gone'); return; }
-
       img.onload  = () => { ldr.classList.add('gone'); img.style.display = 'block'; };
       img.onerror = () => {
         ldr.classList.add('gone');
@@ -937,10 +935,9 @@
             <div style="font-size:0.62rem;font-weight:600;letter-spacing:.08em;color:var(--lime);">
               ${gymUrl.replace(/^https?:\/\//, '')}</div>
             <p style="font-size:.72rem;color:#525252;line-height:1.6;">
-              Screenshot loading…<br/>The chatbot is fully trained on this site.</p>
+              The chatbot is fully trained on this site.</p>
           </div>`);
       };
-
       img.src = `https://api.microlink.io?url=${encodeURIComponent(gymUrl)}&screenshot=true&embed=screenshot.url&meta=false&viewport.width=1280&viewport.height=800`;
     }
 
