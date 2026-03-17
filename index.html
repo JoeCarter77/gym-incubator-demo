@@ -848,19 +848,12 @@
           transcript.textContent = 'Could not connect. Please try again or use Live Chat.';
         });
 
-        // Start the call with gym-specific context injected as system prompt override
-        const systemPrompt = gymContext
-          ? `You are a friendly, helpful receptionist for ${company}, a martial arts gym. You answer inbound calls and help people find out about classes, pricing, schedules, and book a free trial. Here is information about the gym from their website:\n\n${gymContext}\n\nBe warm, concise and encouraging. Always offer a free trial. The person's name is ${leadName}.`
-          : `You are a friendly, helpful receptionist for ${company}, a martial arts gym. You help people find out about classes, pricing, schedules, and book a free trial. Be warm, concise and encouraging. Always offer a free trial. The person's name is ${leadName}.`;
-
+        // Start with minimal config first to confirm connection
         vapi.start(VAPI_ASSISTANT_ID, {
-          assistant: {
-            model: {
-              provider: 'openai',
-              model: 'gpt-4o-mini',
-              messages: [{ role: 'system', content: systemPrompt }]
-            },
-            firstMessage: `Hi ${leadName}! Thanks for calling ${company}. I'm the AI receptionist — how can I help you today?`
+          variableValues: {
+            gymName: company,
+            customerName: leadName,
+            gymContext: gymContext ? gymContext.slice(0, 2000) : ''
           }
         });
 
