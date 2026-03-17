@@ -804,7 +804,7 @@
     try {
         const VapiSDK = window._VapiClass;
         if (!VapiSDK || typeof VapiSDK !== 'function') throw new Error('Vapi SDK not loaded');
-        vapi = new VapiSDK({ apiKey: VAPI_PUBLIC_KEY });
+        vapi = new VapiSDK(VAPI_PUBLIC_KEY);
 
         vapi.on('call-start', () => {
           orb.className      = 'voice-orb listening';
@@ -847,18 +847,9 @@
           transcript.textContent = 'Could not connect. Please try again or use Live Chat.';
         });
 
-        const systemPrompt = gymContext
-          ? `You are a concise, friendly AI receptionist for ${company}, a martial arts gym. Keep all responses under 2 sentences. Be direct. Ask one question at a time. Always try to book them in for a free trial. Here is info about the gym:\n\n${gymContext.slice(0, 2000)}`
-          : `You are a concise, friendly AI receptionist for ${company}, a martial arts gym. Keep all responses under 2 sentences. Be direct. Ask one question at a time. Always try to book them in for a free trial.`;
-
         vapi.start(VAPI_ASSISTANT_ID, {
           assistantOverrides: {
-            firstMessage: `Hi ${leadName}! Thanks for calling ${company}, how can I help you today?`,
-            model: {
-              provider: 'openai',
-              model: 'gpt-4o-mini',
-              systemPrompt: systemPrompt
-            }
+            firstMessage: `Hi ${leadName}! Thanks for calling ${company}, how can I help you today?`
           }
         });
 
