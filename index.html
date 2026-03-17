@@ -798,8 +798,11 @@
       status.className   = 'voice-status-label';
       transcript.textContent = 'Connecting to AI receptionist…';
 
+    console.log('Vapi object keys:', Object.keys(window.Vapi || {}), typeof window.Vapi);
       try {
-        vapi = new (window.Vapi?.default || window.Vapi)(VAPI_PUBLIC_KEY);
+        const VapiSDK = window.Vapi?.default ?? window.Vapi?.Vapi ?? window.Vapi;
+        if (!VapiSDK || typeof VapiSDK !== 'function') throw new Error('Vapi SDK not loaded');
+        vapi = new VapiSDK(VAPI_PUBLIC_KEY);
 
         vapi.on('call-start', () => {
           orb.className      = 'voice-orb listening';
