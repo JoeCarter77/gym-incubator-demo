@@ -1,116 +1,122 @@
-// api/scrape.js — Vercel Serverless Function
-// GET /api/scrape?url=https://royaljiujitsu.co.uk
-
 export default async function handler(req, res) {
-  // CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   if (req.method === 'OPTIONS') return res.status(200).end();
-  if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { url } = req.query;
+  const { url } = req.body;
+  if (!url) return res.status(400).json({ error: 'No URL provided' });
 
-  if (!url) {
-    return res.status(400).json({ error: 'Missing url parameter' });
-  }
+  // Keywords that suggest a page has useful chatbot context
+  const RELEVANT_KEYWORDS = [
+    'price', 'pricing', 'cost', 'fee', 'membership', 'sign-up', 'signup', 'join',
+    'timetable', 'schedule', 'class', 'classes', 'session', 'times',
+    'about', 'contact', 'trial', 'free', 'intro', 'beginner'
+  ];
 
-  // Validate URL
-  let parsedUrl;
-  try {
-    parsedUrl = new URL(url);
-    if (!['http:', 'https:'].includes(parsedUrl.protocol)) {
-      throw new Error('Invalid protocol');
-    }
-  } catch {
-    return res.status(400).json({ error: 'Invalid URL' });
-  }
+  // Hard limit — never scrape more than this many extra pages
+  const MAX_EXTRA_PAGES = 3;
 
   try {
-    // Fetch the main page
-    const mainContent = await fetchPage(url);
+    const baseUrl = new URL(url);
 
-    // Try to also fetch common subpages for richer context
-    const subpages = ['/classes', '/pricing', '/about', '/contact', '/schedule', '/coaches', '/instructors', '/membership'];
-    const subpageContents = await Promise.allSettled(
-      subpages.map(path => fetchPage(`${parsedUrl.origin}${path}`))
-    );
-
-    const allContent = [mainContent];
-    subpageContents.forEach(result => {
-      if (result.status === 'fulfilled' && result.value) {
-        allContent.push(result.value);
+    // --- Helper: fetch a URL and return clean text ---
+    async function fetchText(pageUrl) {
+      try {
+        const response = await fetch(pageUrl, {
+          headers: { 'User-Agent': 'Mozilla/5.0 (compatible; GymIncubatorBot/1.0)' },
+          redirect: 'follow',
+          signal: AbortSignal.timeout(5000)
+        });
+        if (!response.ok) return '';
+        const html = await response.text();
+        return stripHtml(html);
+      } catch {
+        return '';
       }
-    });
+    }
 
-    // Combine and trim
-    const combined = allContent
-      .filter(Boolean)
-      .join('\n\n--- PAGE BREAK ---\n\n')
-      .slice(0, 12000); // Keep context reasonable
+    // --- Helper: strip HTML to plain text ---
+    function stripHtml(html) {
+      return html
+        .replace(/<script[\s\S]*?<\/script>/gi, '')
+        .replace(/<style[\s\S]*?<\/style>/gi, '')
+        .replace(/<[^>]+>/g, ' ')
+        .replace(/\s{2,}/g, ' ')
+        .trim()
+        .slice(0, 3000); // cap each page at 3000 chars
+    }
 
-    return res.status(200).json({
-      content: combined,
-      url,
-      pagesScraped: allContent.length
+    // --- Helper: extract internal nav links from homepage HTML ---
+    function extractNavLinks(html, base) {
+      const links = new Set();
+      const hrefRegex = /href=["']([^"']+)["']/gi;
+      let match;
+      while ((match = hrefRegex.exec(html)) !== null) {
+        try {
+          const parsed = new URL(match[1], base);
+          // Internal links only, no anchors, no files
+          if (
+            parsed.hostname === base.hostname &&
+            parsed.pathname !== '/' &&
+            parsed.pathname !== base.pathname &&
+            !parsed.pathname.match(/\.(jpg|jpeg|png|gif|pdf|zip|css|js)$/i) &&
+            !parsed.hash
+          ) {
+            links.add(parsed.href);
+          }
+        } catch {
+          // skip invalid URLs
+        }
+      }
+      return [...links];
+    }
+
+    // --- Helper: score a URL by how relevant it likely is ---
+    function relevanceScore(pageUrl) {
+      const lower = pageUrl.toLowerCase();
+      let score = 0;
+      for (const keyword of RELEVANT_KEYWORDS) {
+        if (lower.includes(keyword)) score++;
+      }
+      return score;
+    }
+
+    // Step 1: Fetch homepage HTML (raw, before stripping — need links)
+    const homepageResponse = await fetch(url, {
+      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; GymIncubatorBot/1.0)' },
+      redirect: 'follow',
+      signal: AbortSignal.timeout(5000)
     });
+    const homepageHtml = await homepageResponse.text();
+    const homepageText = stripHtml(homepageHtml);
+
+    // Step 2: Discover and rank internal links
+    const allLinks = extractNavLinks(homepageHtml, baseUrl);
+    const ranked = allLinks
+      .map(link => ({ link, score: relevanceScore(link) }))
+      .filter(({ score }) => score > 0)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, MAX_EXTRA_PAGES)
+      .map(({ link }) => link);
+
+    // Step 3: Fetch all relevant pages in parallel
+    const extraTexts = await Promise.all(ranked.map(fetchText));
+
+    // Step 4: Combine into a single context string
+    const sections = [
+      `HOMEPAGE:\n${homepageText}`,
+      ...ranked.map((link, i) => extraTexts[i]
+        ? `PAGE (${new URL(link).pathname}):\n${extraTexts[i]}`
+        : null
+      ).filter(Boolean)
+    ];
+
+    const combinedText = sections.join('\n\n---\n\n');
+
+    return res.status(200).json({ text: combinedText });
 
   } catch (error) {
-    console.error('Scrape error:', error);
-    return res.status(500).json({ error: error.message || 'Failed to scrape URL' });
+    return res.status(500).json({ error: 'Scrape failed', detail: error.message });
   }
-}
-
-async function fetchPage(url) {
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 8000);
-
-  try {
-    const response = await fetch(url, {
-      signal: controller.signal,
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; GymBot/1.0; +https://dojo.ai)',
-        'Accept': 'text/html,application/xhtml+xml',
-        'Accept-Language': 'en-GB,en;q=0.9',
-      }
-    });
-
-    clearTimeout(timeout);
-
-    if (!response.ok) return null;
-
-    const contentType = response.headers.get('content-type') || '';
-    if (!contentType.includes('text/html')) return null;
-
-    const html = await response.text();
-    return extractText(html, url);
-
-  } catch {
-    clearTimeout(timeout);
-    return null;
-  }
-}
-
-function extractText(html, url) {
-  // Remove scripts, styles, comments, and other non-content elements
-  let text = html
-    .replace(/<script[\s\S]*?<\/script>/gi, '')
-    .replace(/<style[\s\S]*?<\/style>/gi, '')
-    .replace(/<!--[\s\S]*?-->/g, '')
-    .replace(/<nav[\s\S]*?<\/nav>/gi, '')
-    .replace(/<footer[\s\S]*?<\/footer>/gi, '')
-    .replace(/<header[\s\S]*?<\/header>/gi, '')
-    .replace(/<svg[\s\S]*?<\/svg>/gi, '')
-    .replace(/<[^>]+>/g, ' ')   // Strip remaining tags
-    .replace(/&nbsp;/g, ' ')
-    .replace(/&amp;/g, '&')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/\s{2,}/g, ' ')    // Collapse whitespace
-    .trim();
-
-  // Add source URL as context
-  return `[SOURCE: ${url}]\n${text}`;
 }
