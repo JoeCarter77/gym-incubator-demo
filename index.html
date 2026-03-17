@@ -6,7 +6,7 @@
   <title id="page-title">AI Assistant Demo — Gym Incubator</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
-  <script src="https://cdn.vapi.ai/vapi.umd.js"></script>
+  <script src="https://unpkg.com/@vapi-ai/web@2.1.1/dist/vapi.umd.js"></script>
   <style>
     :root {
       --black:     #000000;
@@ -799,7 +799,7 @@
       transcript.textContent = 'Connecting to AI receptionist…';
 
       try {
-        vapi = new Vapi(VAPI_PUBLIC_KEY);
+        vapi = new (window.Vapi?.default || window.Vapi)(VAPI_PUBLIC_KEY);
 
         vapi.on('call-start', () => {
           orb.className      = 'voice-orb listening';
