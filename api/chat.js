@@ -1,16 +1,14 @@
 // api/chat.js — Vercel Serverless Function
 // POST /api/chat
-// Body: { messages, gymContext, gymName, gymUrl }
-
+// Body: { messages, systemPrompt, gymName, gymUrl }
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { messages, gymContext, gymName, gymUrl } = req.body;
+  const { messages, systemPrompt, gymName, gymUrl } = req.body;
 
   if (!messages || !Array.isArray(messages)) {
     return res.status(400).json({ error: 'Missing messages array' });
@@ -21,8 +19,9 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'API key not configured' });
   }
 
-  // Build system prompt with scraped gym context
-  const systemPrompt = buildSystemPrompt(gymName, gymUrl, gymContext);
+  // Use the fully-built system prompt from the frontend (includes scraped content + full instructions).
+  // Fall back to a minimal prompt if somehow not provided.
+  const system = systemPrompt || fallbackPrompt(gymName, gymUrl);
 
   try {
     const response = await fetch('https://api.anthropic.com/v1/messages', {
@@ -35,8 +34,8 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         model: 'claude-haiku-4-5-20251001',
         max_tokens: 200,
-        system: systemPrompt,
-        messages: messages.slice(-10) // Keep last 10 messages for context window efficiency
+        system,
+        messages: messages.slice(-10) // last 10 msgs for context efficiency
       })
     });
 
@@ -47,7 +46,6 @@ export default async function handler(req, res) {
 
     const data = await response.json();
     const reply = data.content?.[0]?.text || "I'm not sure about that — please contact the gym directly.";
-
     return res.status(200).json({ reply });
 
   } catch (error) {
@@ -56,22 +54,7 @@ export default async function handler(req, res) {
   }
 }
 
-function buildSystemPrompt(gymName, gymUrl, gymContext) {
-  const contextSection = gymContext
-    ? `\n\n## WEBSITE CONTENT:\n${gymContext.slice(0, 10000)}`
-    : '';
-
-  return `You are the AI assistant for ${gymName || 'this gym'}, chatting with someone who is ALREADY on the gym's website right now.
-
-## CRITICAL RULES:
-- Never tell someone to "visit the website" or "check the website" — they ARE on the website
-- Never tell someone to "click the Book Now button on the website" — talk them through it conversationally instead
-- Keep replies to 2-3 sentences max. Short and helpful.
-- No bullet points, no bold text, no markdown formatting whatsoever
-- Sound like a friendly human at the gym, not a robot
-- If someone asks about a free trial, just confirm you offer one and ask what they'd like to know to get started — name, preferred day, that kind of thing
-- If someone seems interested, gently move the conversation towards getting them booked in
-- Only use information from the website content below — never invent prices, times or class names
-- If you genuinely don't know something, say "I'd recommend giving us a call or dropping us a message and we can sort that for you"
-- UK English only${contextSection}`;
+// Only used if the frontend somehow doesn't send a systemPrompt
+function fallbackPrompt(gymName, gymUrl) {
+  return `You are the AI assistant for ${gymName || 'this gym'}. Be friendly, concise, and helpful. Keep replies to 2-3 sentences. UK English only. Never invent specific prices, times, or class names.`;
 }
