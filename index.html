@@ -924,51 +924,24 @@
       const ldr = document.getElementById('browser-loading');
       const img = document.getElementById('browser-img');
 
-      // Always dismiss the loading overlay immediately — don't block the UI
-      ldr.classList.add('gone');
+      if (!gymUrl) { ldr.classList.add('gone'); return; }
 
-      if (!gymUrl) return;
-
-      // Show a static placeholder right away
-      showScreenshotPlaceholder();
-
-      // Then attempt to load the real screenshot in the background
-      // with a 6-second timeout — if it arrives, swap it in silently
-      const timeoutId = setTimeout(() => { img.src = ''; }, 6000);
-
-      img.onload = () => {
-        clearTimeout(timeoutId);
-        if (img.src) {
-          img.style.display = 'block';
-          // Hide placeholder
-          const ph = document.getElementById('screenshot-placeholder');
-          if (ph) ph.remove();
-        }
-      };
-
+      img.onload  = () => { ldr.classList.add('gone'); img.style.display = 'block'; };
       img.onerror = () => {
-        clearTimeout(timeoutId);
-        // Placeholder already showing — nothing else to do
+        ldr.classList.add('gone');
+        img.parentElement.insertAdjacentHTML('afterbegin', `
+          <div style="position:absolute;inset:0;display:flex;flex-direction:column;
+            align-items:center;justify-content:center;gap:12px;background:#090909;
+            padding:24px;text-align:center;z-index:1;">
+            <div style="font-size:1.8rem">🌐</div>
+            <div style="font-size:0.62rem;font-weight:600;letter-spacing:.08em;color:var(--lime);">
+              ${gymUrl.replace(/^https?:\/\//, '')}</div>
+            <p style="font-size:.72rem;color:#525252;line-height:1.6;">
+              Screenshot loading…<br/>The chatbot is fully trained on this site.</p>
+          </div>`);
       };
 
       img.src = `https://api.microlink.io?url=${encodeURIComponent(gymUrl)}&screenshot=true&embed=screenshot.url&meta=false&viewport.width=1280&viewport.height=800`;
-    }
-
-    function showScreenshotPlaceholder() {
-      const content = document.querySelector('.browser-content');
-      if (!content || document.getElementById('screenshot-placeholder')) return;
-      const domain = gymUrl.replace(/^https?:\/\//, '').replace(/\/$/, '');
-      const ph = document.createElement('div');
-      ph.id = 'screenshot-placeholder';
-      ph.style.cssText = 'position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;background:#090909;padding:24px;text-align:center;z-index:1;';
-      ph.innerHTML = `
-        <div style="font-size:2rem">🌐</div>
-        <div style="font-size:0.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--lime);">${domain}</div>
-        <p style="font-size:.72rem;color:#3a3a3a;line-height:1.65;max-width:220px;">Your website preview is loading in the background.<br/>The AI is already ready — click the chat bubble!</p>
-        <div style="margin-top:4px;">
-          <button onclick="toggleChat()" style="background:var(--lime);color:#000;border:none;border-radius:8px;padding:9px 18px;font-family:inherit;font-size:0.78rem;font-weight:700;cursor:pointer;letter-spacing:-0.01em;">Try the AI now →</button>
-        </div>`;
-      content.appendChild(ph);
     }
 
     // ── SCRAPE & TRAIN ──────────────────────────────────────────────────────────
@@ -976,43 +949,35 @@
       const bar = document.getElementById('cp-sbar');
       const txt = document.getElementById('cp-sbar-txt');
 
-      // Set a basic context and mark ready immediately — chat is usable right away
-      gymContext = gymUrl ? `Gym called ${company}. Website: ${gymUrl}` : `Martial arts gym: ${company}.`;
+      if (!gymUrl) {
+        gymContext = `Martial arts gym: ${company}.`;
+        setReady();
+        return;
+      }
+
+      // Mark ready immediately with basic fallback — chat opens without waiting
+      gymContext = `Martial arts gym called ${company}. Website: ${gymUrl}`;
       setReady();
 
-      if (!gymUrl) return;
-
-      // Scrape in the background — context will be upgraded when done
+      // Scrape in background — upgrades gymContext when done
       try {
         txt.textContent = 'Training on website content…';
-        const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 12000); // 12s max
-
         const res = await fetch('/api/scrape', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ url: gymUrl }),
-          signal: controller.signal
+          body: JSON.stringify({ url: gymUrl })
         });
-        clearTimeout(timeout);
-
         const data = await res.json();
-
         if (data.text) {
-          gymContext = data.text; // upgrade context — next message sent will use this
+          gymContext = data.text;
           bar.className = 'cp-sbar done';
           txt.textContent = `✓ Trained on ${gymUrl.replace(/^https?:\/\//, '')}`;
         } else {
           throw new Error('empty');
         }
-      } catch (e) {
-        if (e.name === 'AbortError') {
-          bar.className = 'cp-sbar error';
-          txt.textContent = '⚠ Scrape timed out — using basic info';
-        } else {
-          bar.className = 'cp-sbar error';
-          txt.textContent = '⚠ Using basic info — scrape unavailable';
-        }
+      } catch {
+        bar.className = 'cp-sbar error';
+        txt.textContent = '⚠ Using basic info — scrape unavailable';
       }
     }
 
