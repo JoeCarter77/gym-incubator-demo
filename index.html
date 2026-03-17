@@ -133,6 +133,22 @@
     }
 
 
+
+    /* ── INTRO CTA ── */
+    .intro-cta {
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .intro-cta-title {
+      font-size: 1.3rem; font-weight: 800;
+      letter-spacing: -0.02em; color: var(--white);
+      line-height: 1.2;
+    }
+    .intro-cta-title strong { color: var(--lime); }
+    .intro-cta-sub {
+      font-size: 0.95rem; color: var(--grey);
+      line-height: 1.8; font-weight: 300;
+    }
+
     /* ── DEMO DISCLAIMER ── */
     .demo-notice {
       display: flex; gap: 14px; align-items: flex-start;
@@ -675,21 +691,14 @@
     <div class="left">
       <div class="eyebrow fu">Personalised for your gym</div>
 
-            <h1 class="fu fu-1">
+      <h1 class="fu fu-1">
         The AI Assistant<br>Behind <span class="lime" id="hero-name">Your Gym</span>
       </h1>
 
-      <p class="subtitle fu fu-2" id="hero-sub">
-        A 24/7 AI assistant trained on your gym's own website — answers questions about classes, pricing, coaches and location, and books free trials automatically.
-      </p>
-
-      <!-- Demo disclaimer -->
-      <div class="demo-notice fu fu-2">
-        <div class="demo-notice-icon">💡</div>
-        <div class="demo-notice-text">
-          <strong>This demo is trained only on what’s publicly on your website.</strong>
-          In a real build we’d go much deeper — every class detail, pricing tier, coach bio, booking flow, and FAQ your team knows by heart. The result is an assistant that sounds like it was born in your gym.
-        </div>
+      <!-- Intro message -->
+      <div class="intro-cta fu fu-2">
+        <p class="intro-cta-title">Hi <strong id="hero-firstname">there</strong>, meet your AI employee.</p>
+        <p class="intro-cta-sub">Chat with it. Talk to it.<br>Roleplay real conversations for your business, right now.<br>Tap the icon on your website to choose Chat or Voice and experience your AI employee in action.</p>
       </div>
 
       <!-- Browser mockup -->
@@ -820,12 +829,13 @@
         </div><!-- /browser -->
       </div>
 
-      <div class="chips fu fu-4">
-        <div class="chip">📅 Class schedules</div>
-        <div class="chip">💰 Pricing &amp; memberships</div>
-        <div class="chip">📍 Location &amp; hours</div>
-        <div class="chip">👥 Coaches &amp; team</div>
-        <div class="chip">🥊 Free trial bookings</div>
+      <!-- Demo disclaimer — below the browser -->
+      <div class="demo-notice fu fu-4">
+        <div class="demo-notice-icon">💡</div>
+        <div class="demo-notice-text">
+          <strong>This demo is trained only on what's publicly on your website.</strong>
+          In a real build we'd go much deeper — every class detail, pricing tier, coach bio, booking flow, and FAQ your team knows by heart. The result is an assistant that sounds like it was born in your gym.
+        </div>
       </div>
     </div>
 
@@ -843,7 +853,7 @@
           <div class="b-icon">💬</div>
           <div>
             <div class="b-title">Never miss a lead</div>
-            <div class="b-desc">Answers enquiries at midnight, weekends, mid-class — whenever you can't pick up</div>
+            <div class="b-desc">Handles every enquiry 24/7 — you never have to deal with a missed lead again</div>
           </div>
         </div>
         <div class="benefit">
@@ -865,6 +875,13 @@
           <div>
             <div class="b-title">More trial bookings</div>
             <div class="b-desc">Guides hesitant visitors towards booking their first class automatically</div>
+          </div>
+        </div>
+        <div class="benefit">
+          <div class="b-icon">🔗</div>
+          <div>
+            <div class="b-title">Connects to your CRM</div>
+            <div class="b-desc">Plugs into your existing membership system to track, store and follow up with every lead automatically</div>
           </div>
         </div>
       </div>
@@ -900,9 +917,11 @@
         `<span class="url-domain">${clean}</span>`;
     }
 
+    // Set personalised firstname in intro
     if (firstName) {
-      document.getElementById('hero-sub').textContent =
-        `Hi ${firstName} — this is a live demo of what your AI assistant could look like, trained on ${company}'s own website. Click the chat bubble on the preview below.`;
+      document.getElementById('hero-firstname').textContent = firstName;
+    } else {
+      document.getElementById('hero-firstname').textContent = 'there';
     }
 
     // ── STATE ───────────────────────────────────────────────────────────────────
