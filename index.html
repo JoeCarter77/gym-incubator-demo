@@ -847,9 +847,19 @@
           transcript.textContent = 'Could not connect. Please try again or use Live Chat.';
         });
 
-        vapi.start(VAPI_ASSISTANT_ID, {
-          assistant: {
-            firstMessage: `Hi ${leadName}! Thanks for calling ${company}, how can I help you today?`
+        const systemPrompt = gymContext
+          ? `You are a concise, friendly AI receptionist for ${company}, a martial arts gym. Keep all responses under 2 sentences. Be direct. Ask one question at a time. Always try to book them in for a free trial. Here is info about the gym:\n\n${gymContext.slice(0, 2000)}`
+          : `You are a concise, friendly AI receptionist for ${company}, a martial arts gym. Keep all responses under 2 sentences. Be direct. Ask one question at a time. Always try to book them in for a free trial.`;
+
+        vapi.start({
+          name: 'Gym Receptionist',
+          firstMessage: `Hi ${leadName}! Thanks for calling ${company}, how can I help you today?`,
+          transcriber: { provider: 'deepgram', model: 'nova-2', language: 'en-GB' },
+          voice: { provider: 'elevenlabs', voiceId: 'sarah' },
+          model: {
+            provider: 'openai',
+            model: 'gpt-4o-mini',
+            messages: [{ role: 'system', content: systemPrompt }]
           }
         });
 
