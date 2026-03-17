@@ -1,17 +1,15 @@
 {
-  "version": 2,
-  "routes": [
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/$1" }
+  ],
+  "headers": [
     {
-      "src": "/api/scrape",
-      "dest": "/api/scrape.js"
-    },
-    {
-      "src": "/api/chat",
-      "dest": "/api/chat.js"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
+      "source": "/(.*)",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Allow-Methods", "value": "GET, POST, OPTIONS" },
+        { "key": "Access-Control-Allow-Headers", "value": "Content-Type, Authorization" }
+      ]
     }
   ]
 }
