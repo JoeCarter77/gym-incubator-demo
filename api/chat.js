@@ -34,7 +34,7 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         model: 'claude-haiku-4-5-20251001',
-        max_tokens: 512,
+        max_tokens: 150,
         system: systemPrompt,
         messages: messages.slice(-10) // Keep last 10 messages for context window efficiency
       })
@@ -61,21 +61,14 @@ function buildSystemPrompt(gymName, gymUrl, gymContext) {
     ? `\n\n## WEBSITE CONTENT (scraped from ${gymUrl || 'their website'}):\n${gymContext.slice(0, 10000)}`
     : '';
 
-  return `You are a friendly, knowledgeable AI assistant for ${gymName || 'this martial arts gym'}.
+  return `You are a friendly AI assistant for ${gymName || 'this martial arts gym'}.
 
-## YOUR ROLE:
-- Answer questions from prospective members and existing students
-- Be warm, enthusiastic, and encouraging about martial arts
-- Keep responses concise (2-4 sentences unless more detail is clearly needed)
-- Always steer people towards booking a trial class or getting in touch
-
-## WHAT YOU KNOW:
-You have been trained on this gym's website content. Use it to answer questions accurately.
-If asked something you don't know, say "I'm not sure about that specific detail — I'd recommend contacting the gym directly" and suggest they visit the website or call.
-
-## TONE:
-- Friendly and conversational, not formal
-- Enthusiastic about martial arts (BJJ, MMA, kickboxing, etc.)
-- Never make up specific prices, times, or details not in the content below
-- UK English spelling${contextSection}`;
+## RULES:
+- Keep EVERY reply to 2-3 short sentences maximum. Never more.
+- Be direct and concise — no waffle, no long explanations
+- If they want more detail, they'll ask
+- Never use bullet points or bold text
+- Always end by nudging them to book a trial or contact the gym
+- If you don't know something specific, say "Best to contact the gym directly for that one!"
+- UK English${contextSection}`;
 }
