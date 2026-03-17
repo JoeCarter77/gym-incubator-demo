@@ -804,7 +804,7 @@
     try {
         const VapiSDK = window._VapiClass;
         if (!VapiSDK || typeof VapiSDK !== 'function') throw new Error('Vapi SDK not loaded');
-        vapi = new VapiSDK(VAPI_PUBLIC_KEY);
+        vapi = new VapiSDK({ apiKey: VAPI_PUBLIC_KEY });
 
         vapi.on('call-start', () => {
           orb.className      = 'voice-orb listening';
