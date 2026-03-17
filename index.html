@@ -132,6 +132,22 @@
       font-weight: 300;
     }
 
+
+    /* ── DEMO DISCLAIMER ── */
+    .demo-notice {
+      display: flex; gap: 14px; align-items: flex-start;
+      background: rgba(170,255,0,0.05);
+      border: 1px solid rgba(170,255,0,0.18);
+      border-radius: 10px; padding: 14px 16px;
+    }
+    .demo-notice-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+    .demo-notice-text {
+      font-size: 0.78rem; color: #888; line-height: 1.65;
+    }
+    .demo-notice-text strong {
+      color: var(--lime); font-weight: 700; display: block; margin-bottom: 4px;
+    }
+
     /* ── BROWSER MOCKUP ── */
     .browser-wrap { display: flex; flex-direction: column; gap: 10px; }
     .browser-label {
@@ -659,15 +675,22 @@
     <div class="left">
       <div class="eyebrow fu">Personalised for your gym</div>
 
-      <h1 class="fu fu-1">
-        The AI That Fills<br>
-        Your <span class="lime" id="hero-name">Classes</span><br>
-        <span class="dim">While You Train</span>
+            <h1 class="fu fu-1">
+        The AI Assistant<br>Behind <span class="lime" id="hero-name">Your Gym</span>
       </h1>
 
       <p class="subtitle fu fu-2" id="hero-sub">
         A 24/7 AI assistant trained on your gym's own website — answers questions about classes, pricing, coaches and location, and books free trials automatically.
       </p>
+
+      <!-- Demo disclaimer -->
+      <div class="demo-notice fu fu-2">
+        <div class="demo-notice-icon">💡</div>
+        <div class="demo-notice-text">
+          <strong>This demo is trained only on what’s publicly on your website.</strong>
+          In a real build we’d go much deeper — every class detail, pricing tier, coach bio, booking flow, and FAQ your team knows by heart. The result is an assistant that sounds like it was born in your gym.
+        </div>
+      </div>
 
       <!-- Browser mockup -->
       <div class="browser-wrap fu fu-3">
@@ -1099,7 +1122,7 @@
         const res  = await fetch('/api/chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ messages: history, gymContext, gymName: company, gymUrl })
+          body: JSON.stringify({ messages: history, systemPrompt: buildSystemPrompt('chat'), gymName: company, gymUrl })
         });
         const data = await res.json();
         removeTyping();
@@ -1127,6 +1150,44 @@
       }
       document.getElementById('cp-inp').value = btn.textContent;
       setTimeout(sendMsg, 40);
+    }
+
+    // ── SHARED SYSTEM PROMPT BUILDER ──────────────────────────────────
+    // Called by both chat (/api/chat) and voice (Vapi).
+    // mode = 'chat' | 'voice'  (voice adds "no bullet points" instruction)
+    function buildSystemPrompt(mode) {
+      const contextBlock = gymContext
+        ? `\n\nYou have been given information scraped from ${company}\'s website. This is your primary source of truth. Use it to answer questions about memberships, classes, pricing, facilities, opening hours, trainers, and anything else covered on the site.\n\n--- WEBSITE CONTENT ---\n${gymContext.slice(0, 4000)}\n--- END WEBSITE CONTENT ---`
+        : '';
+
+      const voiceRule = mode === 'voice'
+        ? '\n\nIMPORTANT FOR VOICE: Never use bullet points, lists, dashes, or special characters. Speak only in full, natural sentences. Keep every response to 1-2 sentences maximum.'
+        : '';
+
+      return \`You are a friendly, upbeat AI assistant for ${company}, a martial arts and fitness gym. Your name is the ${company} Assistant.
+
+KNOWLEDGE BASE:
+If you don\'t have a specific answer, do NOT say "I don\'t know" and leave it there. Give a helpful, general response based on what you do know about the gym, then suggest the user contact the gym directly. Never make up specific facts like prices, times, or trainer names. If unsure, stay general and redirect warmly.
+Example: "I don\'t have the exact details on that, but we offer a range of flexible membership options — the team will be able to give you the full breakdown. Want me to help you get in touch?"
+
+YOUR THREE MAIN JOBS:
+1. ANSWER FAQs — Use the website content to answer questions about memberships, classes, facilities, parking, equipment, and personal training. Keep answers concise. Give the key point first, then offer more detail if they want it.
+2. BOOK APPOINTMENTS / TASTER SESSIONS — If someone wants to book a class, PT session, gym tour, or taster session, guide them through it. Collect: their name, what they\'re interested in, and a preferred date/time. If you can\'t complete a booking directly, let them know someone will confirm it.
+3. GENERATE LEADS — If someone seems interested but isn\'t ready to commit, offer a free trial, taster session, or quick tour as a low-pressure next step. Always try to capture a name and contact detail.
+
+TONE & STYLE:
+- Friendly, casual, and upbeat — like a gym buddy, not a salesperson
+- Short sentences, everyday language, no jargon
+- Be encouraging and positive, especially around fitness goals
+- Never be pushy — if someone isn\'t interested, be gracious and leave the door open
+- Don\'t give long walls of text — keep it punchy
+
+WHAT TO AVOID:
+- Don\'t invent specific details not in your knowledge base
+- Don\'t go off-topic into general fitness advice unless specifically asked
+- Don\'t give long walls of text
+
+CLOSING: Always end on a helpful note. If you\'ve answered their question, check if there\'s anything else you can help with. If you\'ve captured a lead or booking request, confirm what happens next.\${contextBlock}\${voiceRule}\`;
     }
 
     // ── VOICE CALL (Vapi) ────────────────────────────────────────────────────────
@@ -1200,9 +1261,7 @@
         });
 
         // ── Build system prompt ──────────────────────────────
-        const systemPrompt = gymContext
-          ? `You are a concise, friendly AI receptionist for ${company}, a martial arts gym. Keep all responses under 2 sentences. Be direct and warm. Ask only one question at a time. Your goal is always to help the caller book a free trial. Here is information about the gym:\n\n${gymContext.slice(0, 3000)}`
-          : `You are a concise, friendly AI receptionist for ${company}, a martial arts gym. Keep all responses under 2 sentences. Be direct and warm. Ask only one question at a time. Your goal is to help the caller book a free trial.`;
+        const systemPrompt = buildSystemPrompt('voice');
 
         // ── START — transient assistant config (no assistant ID) ─
         // provider for ElevenLabs = '11labs' (NOT 'elevenlabs')
