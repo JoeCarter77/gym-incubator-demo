@@ -41,12 +41,10 @@ export default async function handler(req, res) {
   }
 
   function extractText(html) {
-    // Strip scripts, styles, nav, footer, head
+    // Strip scripts, styles, head — keep nav/footer as they often contain address/contact info
     let text = html
       .replace(/<script[\s\S]*?<\/script>/gi, ' ')
       .replace(/<style[\s\S]*?<\/style>/gi, ' ')
-      .replace(/<nav[\s\S]*?<\/nav>/gi, ' ')
-      .replace(/<footer[\s\S]*?<\/footer>/gi, ' ')
       .replace(/<head[\s\S]*?<\/head>/gi, ' ')
       .replace(/<!--[\s\S]*?-->/g, ' ')
       .replace(/<[^>]+>/g, ' ')
