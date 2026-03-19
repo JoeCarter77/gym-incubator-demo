@@ -1317,7 +1317,7 @@
     // mode = 'chat' | 'voice'  (voice adds "no bullet points" instruction)
     function buildSystemPrompt(mode) {
       const contextBlock = gymContext
-        ? `\n\nYou have been given information scraped from ${company}\'s website. This is your primary source of truth. Use it to answer questions about memberships, classes, pricing, facilities, opening hours, trainers, and anything else covered on the site.\n\n--- WEBSITE CONTENT ---\n${gymContext.slice(0, 4000)}\n--- END WEBSITE CONTENT ---`
+        ? `\n\nYou have been given information scraped from ${company}\'s website. This is your primary source of truth. Use it to answer questions about memberships, classes, pricing, facilities, opening hours, trainers, and anything else covered on the site.\n\n--- WEBSITE CONTENT ---\n${gymContext.slice(0, 8000)}\n--- END WEBSITE CONTENT ---`
         : '';
 
       const voiceRule = mode === 'voice'
