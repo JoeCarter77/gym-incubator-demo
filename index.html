@@ -651,18 +651,39 @@
     let vapi         = null;
     let vapiActive   = false;
 
+    function showScreenshotFallback(parent) {
+      parent.insertAdjacentHTML('afterbegin',
+        '<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:#090909;padding:24px;text-align:center;z-index:1;">' +
+        '<div style="font-size:1.8rem">🌐</div>' +
+        '<div style="font-size:0.62rem;font-weight:600;letter-spacing:.08em;color:var(--lime);">' + gymUrl.replace(/^https?:\/\//, '') + '</div>' +
+        '<p style="font-size:.72rem;color:#525252;line-height:1.6;">The chatbot is fully trained on this site.</p></div>');
+    }
+
     function loadScreenshot() {
       const ldr = document.getElementById('browser-loading');
       const img = document.getElementById('browser-img');
       if (!gymUrl) { ldr.classList.add('gone'); return; }
-      img.onload  = function() { ldr.classList.add('gone'); img.style.display = 'block'; };
-      img.onerror = function() {
+      var done = false;
+      var timer = setTimeout(function() {
+        if (done) return;
+        done = true;
+        img.src = '';
         ldr.classList.add('gone');
-        img.parentElement.insertAdjacentHTML('afterbegin',
-          '<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:#090909;padding:24px;text-align:center;z-index:1;">' +
-          '<div style="font-size:1.8rem">🌐</div>' +
-          '<div style="font-size:0.62rem;font-weight:600;letter-spacing:.08em;color:var(--lime);">' + gymUrl.replace(/^https?:\/\//, '') + '</div>' +
-          '<p style="font-size:.72rem;color:#525252;line-height:1.6;">The chatbot is fully trained on this site.</p></div>');
+        showScreenshotFallback(img.parentElement);
+      }, 7000);
+      img.onload = function() {
+        if (done) return;
+        done = true;
+        clearTimeout(timer);
+        ldr.classList.add('gone');
+        img.style.display = 'block';
+      };
+      img.onerror = function() {
+        if (done) return;
+        done = true;
+        clearTimeout(timer);
+        ldr.classList.add('gone');
+        showScreenshotFallback(img.parentElement);
       };
       img.src = 'https://api.microlink.io?url=' + encodeURIComponent(gymUrl) + '&screenshot=true&embed=screenshot.url&meta=false&viewport.width=1280&viewport.height=900';
     }
@@ -856,8 +877,26 @@
       const ldr = document.getElementById('phone-loading');
       const img = document.getElementById('phone-img');
       if (!gymUrl) { ldr.classList.add('gone'); return; }
-      img.onload  = function() { ldr.classList.add('gone'); img.style.display = 'block'; };
-      img.onerror = function() { ldr.classList.add('gone'); };
+      var done = false;
+      var timer = setTimeout(function() {
+        if (done) return;
+        done = true;
+        img.src = '';
+        ldr.classList.add('gone');
+      }, 7000);
+      img.onload = function() {
+        if (done) return;
+        done = true;
+        clearTimeout(timer);
+        ldr.classList.add('gone');
+        img.style.display = 'block';
+      };
+      img.onerror = function() {
+        if (done) return;
+        done = true;
+        clearTimeout(timer);
+        ldr.classList.add('gone');
+      };
       img.src = 'https://api.microlink.io?url=' + encodeURIComponent(gymUrl) + '&screenshot=true&embed=screenshot.url&meta=false&device=iphone&viewport.width=390&viewport.height=844';
     }
 
