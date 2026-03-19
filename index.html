@@ -503,6 +503,16 @@
     .cp-send:active { transform: scale(0.92); }
     .cp-send:disabled { opacity: 0.35; cursor: default; transform: none; }
 
+    .chat-back-btn {
+      width: 28px; height: 28px; flex-shrink: 0;
+      background: #1a1a1a; border: 1px solid var(--border-hi);
+      border-radius: 50%; color: var(--grey);
+      font-size: 0.8rem; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s, color 0.15s;
+    }
+    .chat-back-btn:hover { background: #252525; color: var(--white); }
+
     /* ── VOICE SCREEN ── */
     .voice-screen {
       padding: 24px 16px; gap: 18px;
@@ -838,6 +848,7 @@
                   <span id="cp-sbar-txt">Training on website content…</span>
                 </div>
                 <div class="cp-inp-row">
+                  <button class="chat-back-btn" onclick="goBackToMode()" title="Back">←</button>
                   <input class="cp-inp" id="cp-inp" type="text" placeholder="Ask anything…" disabled />
                   <button class="cp-send" id="cp-send" onclick="sendMsg()" disabled>
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
@@ -939,6 +950,7 @@
                 </div>
                 <div class="cp-sbar" id="cp-sbar-phone" style="display:none"><div class="sdot"></div><span>Training…</span></div>
                 <div class="cp-inp-row">
+                  <button class="chat-back-btn" onclick="goBackToModePhone()" title="Back">←</button>
                   <input class="cp-inp" id="cp-inp-phone" type="text" placeholder="Ask anything…" disabled />
                   <button class="cp-send" id="cp-send-phone" onclick="sendMsgPhone()" disabled>
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
@@ -1100,7 +1112,7 @@
               The chatbot is fully trained on this site.</p>
           </div>`);
       };
-      img.src = `https://api.microlink.io?url=${encodeURIComponent(gymUrl)}&screenshot=true&embed=screenshot.url&meta=false&viewport.width=1280&viewport.height=800`;
+      img.src = `https://api.microlink.io?url=${encodeURIComponent(gymUrl)}&screenshot=true&embed=screenshot.url&meta=false&viewport.width=1280&viewport.height=900`;
     }
 
     // ── SCRAPE & TRAIN ──────────────────────────────────────────────────────────
@@ -1142,13 +1154,28 @@
       document.getElementById('cp-inp').disabled  = false;
       document.getElementById('cp-send').disabled = false;
 
+      // Also enable phone inputs immediately
+      const phoneInp  = document.getElementById('cp-inp-phone');
+      const phoneSend = document.getElementById('cp-send-phone');
+      if (phoneInp)  phoneInp.disabled  = false;
+      if (phoneSend) phoneSend.disabled = false;
+
       setTimeout(() => {
         if (!chatOpen) document.getElementById('ibb-badge').classList.remove('hidden');
+        if (!chatOpenPhone) {
+          const badge = document.getElementById('ibb-badge-phone');
+          if (badge) badge.classList.remove('hidden');
+        }
       }, 2000);
 
       document.getElementById('cp-inp').addEventListener('keydown', e => {
         if (e.key === 'Enter' && !e.shiftKey) sendMsg();
       });
+      if (phoneInp) {
+        phoneInp.addEventListener('keydown', e => {
+          if (e.key === 'Enter' && !e.shiftKey) sendMsgPhone();
+        });
+      }
     }
 
     // ── SCREEN NAVIGATION ───────────────────────────────────────────────────────
@@ -1175,6 +1202,21 @@
     }
 
     function goBack() { showScreen('mode'); }
+
+    function goBackToMode() {
+      // Clear chat history and reset to mode screen
+      document.getElementById('cp-msgs').innerHTML = '';
+      history.length = 0;
+      selectedMode = null;
+      showScreen('mode');
+    }
+
+    function goBackToModePhone() {
+      document.getElementById('cp-msgs-phone').innerHTML = '';
+      historyPhone.length = 0;
+      selectedModePhone = null;
+      showScreenPhone('mode');
+    }
 
     function startFromContact() {
       const nameEl  = document.getElementById('contact-name');
@@ -1262,7 +1304,6 @@
       sending = true;
       inp.value = '';
       document.getElementById('cp-send').disabled = true;
-      document.getElementById('cp-suggs').style.display = 'none';
 
       addMsg(text, 'user');
       history.push({ role: 'user', content: text });
@@ -1433,15 +1474,7 @@
     let vapiActivePhone   = false;
 
     function setupPhoneReady() {
-      const inp  = document.getElementById('cp-inp-phone');
-      const send = document.getElementById('cp-send-phone');
-      if (!inp || !send) return;
-      inp.disabled  = false;
-      send.disabled = false;
-      setTimeout(() => {
-        if (!chatOpenPhone) document.getElementById('ibb-badge-phone').classList.remove('hidden');
-      }, 2000);
-      inp.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) sendMsgPhone(); });
+      // Phone inputs now enabled directly in setReady() — nothing extra needed
     }
 
     function showScreenPhone(id) {
@@ -1517,7 +1550,6 @@
       if (!text) return;
       sendingPhone = true; inp.value = '';
       document.getElementById('cp-send-phone').disabled = true;
-      document.getElementById('cp-suggs-phone').style.display = 'none';
       addMsgPhone(text, 'user');
       historyPhone.push({ role: 'user', content: text });
       showTypingPhone();
