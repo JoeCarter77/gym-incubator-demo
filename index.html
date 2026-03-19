@@ -132,8 +132,6 @@
       font-weight: 300;
     }
 
-
-
     /* ── INTRO CTA ── */
     .intro-cta {
       display: flex; flex-direction: column; gap: 10px;
@@ -1044,7 +1042,7 @@
 
   <script>
     // ── CONFIG ──────────────────────────────────────────────────────────────────
-    const VAPI_PUBLIC_KEY   = 'a154a7cb-a164-4fd8-bf2d-6b3aaba450a0';
+    const VAPI_PUBLIC_KEY = 'a154a7cb-a164-4fd8-bf2d-6b3aaba450a0';
 
     // ── URL PARAMS ──────────────────────────────────────────────────────────────
     const p         = new URLSearchParams(window.location.search);
@@ -1064,7 +1062,6 @@
         `<span class="url-domain">${clean}</span>`;
     }
 
-    // Set personalised firstname in all intro blocks
     const fn = firstName || 'there';
     ['hero-firstname', 'hero-firstname-mobile'].forEach(id => {
       const el = document.getElementById(id);
@@ -1076,12 +1073,11 @@
     let gymContext   = '';
     let ready        = false;
     let sending      = false;
-    let selectedMode = null;   // 'chat' | 'voice'
+    let selectedMode = null;
     let leadName     = '';
     let leadEmail    = '';
     const history    = [];
 
-    // Vapi state
     let vapi       = null;
     let vapiActive = false;
 
@@ -1118,13 +1114,10 @@
         return;
       }
 
-      // Mark ready immediately with basic fallback — chat opens without waiting
       gymContext = `Martial arts gym called ${company}. Website: ${gymUrl}`;
       setReady();
 
-      // Scrape in background — upgrades gymContext when done
       try {
-        txt.textContent = 'Training on website content…';
         const res = await fetch('/api/scrape', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -1133,14 +1126,14 @@
         const data = await res.json();
         if (data.text) {
           gymContext = data.text;
-          bar.className = 'cp-sbar done';
-          txt.textContent = `✓ Trained on ${gymUrl.replace(/^https?:\/\//, '')}`;
+          if (bar) { bar.className = 'cp-sbar done'; }
+          if (txt) { txt.textContent = `✓ Trained on ${gymUrl.replace(/^https?:\/\//, '')}`; }
         } else {
           throw new Error('empty');
         }
       } catch {
-        bar.className = 'cp-sbar error';
-        txt.textContent = '⚠ Using basic info — scrape unavailable';
+        if (bar) { bar.className = 'cp-sbar error'; }
+        if (txt) { txt.textContent = '⚠ Using basic info — scrape unavailable'; }
       }
     }
 
@@ -1149,7 +1142,6 @@
       document.getElementById('cp-inp').disabled  = false;
       document.getElementById('cp-send').disabled = false;
 
-      // Show badge after a short delay
       setTimeout(() => {
         if (!chatOpen) document.getElementById('ibb-badge').classList.remove('hidden');
       }, 2000);
@@ -1182,9 +1174,7 @@
       setTimeout(() => document.getElementById('contact-name').focus(), 80);
     }
 
-    function goBack() {
-      showScreen('mode');
-    }
+    function goBack() { showScreen('mode'); }
 
     function startFromContact() {
       const nameEl  = document.getElementById('contact-name');
@@ -1210,7 +1200,7 @@
     }
 
     // ── LEAD CAPTURE → GHL ──────────────────────────────────────────────────────
-    const GHL_WEBHOOK_URL = ''; // e.g. 'https://services.leadconnectorhq.com/hooks/...'
+    const GHL_WEBHOOK_URL = '';
 
     function sendLeadToGHL(name, email) {
       if (!GHL_WEBHOOK_URL) return;
@@ -1224,7 +1214,7 @@
     // ── CHAT ────────────────────────────────────────────────────────────────────
     function initChat(name) {
       addMsg(
-        `Hi ${name}! I'm the AI assistant for ${company}. I've been trained on the website and can answer questions about classes, pricing, coaches and getting started. What would you like to know? 👊`,
+        `Hi ${name}! I'm the AI assistant for ${company} — ask me anything about classes, pricing, or how to get started. 👊`,
         'bot'
       );
       setTimeout(() => document.getElementById('cp-inp').focus(), 80);
@@ -1312,56 +1302,28 @@
       setTimeout(sendMsg, 40);
     }
 
-    // ── SHARED SYSTEM PROMPT BUILDER ──────────────────────────────────
-    // Called by both chat (/api/chat) and voice (Vapi).
-    // mode = 'chat' | 'voice'  (voice adds "no bullet points" instruction)
+    // ── SYSTEM PROMPT BUILDER ────────────────────────────────────────────────────
     function buildSystemPrompt(mode) {
       const contextBlock = gymContext
-        ? `\n\nYou have been given information scraped from ${company}\'s website. This is your primary source of truth. Use it to answer questions about memberships, classes, pricing, facilities, opening hours, trainers, and anything else covered on the site.\n\n--- WEBSITE CONTENT ---\n${gymContext.slice(0, 8000)}\n--- END WEBSITE CONTENT ---`
+        ? '\n\n--- WEBSITE CONTENT (your primary knowledge — use it directly, do not ignore it) ---\n' + gymContext.slice(0, 8000) + '\n--- END WEBSITE CONTENT ---'
         : '';
 
       const voiceRule = mode === 'voice'
-        ? '\n\nIMPORTANT FOR VOICE: Never use bullet points, lists, dashes, or special characters. Speak only in full, natural sentences. Keep every response to 1-2 sentences maximum.'
+        ? '\n\nVOICE RULES: Never use bullet points, lists, dashes, or special characters. Full natural sentences only. Maximum 2 short sentences per response.'
         : '';
 
-      return `You are a friendly, upbeat AI assistant for ${company}, a martial arts and fitness gym. Your name is the ${company} Assistant.
-
-KNOWLEDGE BASE:
-If you don\'t have a specific answer, do NOT say "I don\'t know" and leave it there. Give a helpful, general response based on what you do know about the gym, then suggest the user contact the gym directly. Never make up specific facts like prices, times, or trainer names. If unsure, stay general and redirect warmly.
-Example: "I don\'t have the exact details on that, but we offer a range of flexible membership options — the team will be able to give you the full breakdown. Want me to help you get in touch?"
-
-YOUR THREE MAIN JOBS:
-1. ANSWER FAQs — Use the website content to answer questions about memberships, classes, facilities, parking, equipment, and personal training. Keep answers concise. Give the key point first, then offer more detail if they want it.
-2. BOOK APPOINTMENTS / TASTER SESSIONS — If someone wants to book a class, PT session, gym tour, or taster session, guide them through it. Collect: their name, what they\'re interested in, and a preferred date/time. If you can\'t complete a booking directly, let them know someone will confirm it.
-3. GENERATE LEADS — If someone seems interested but isn\'t ready to commit, offer a free trial, taster session, or quick tour as a low-pressure next step. Always try to capture a name and contact detail.
-
-TONE & STYLE:
-- Friendly, casual, and upbeat — like a gym buddy, not a salesperson
-- Short sentences, everyday language, no jargon
-- Maximum 2 sentences per reply. If you need more, break it into a follow-up question instead
-- Be encouraging and positive, especially around fitness goals
-- Never be pushy — if someone isn\'t interested, be gracious and leave the door open
-- Don\'t give long walls of text — keep it punchy
-
-WHAT TO AVOID:\n- NEVER state a location, city, or address unless it is explicitly written in the scraped website content. Never guess or assume.\n- Don\'t invent specific details (prices, times, class names, trainer names)\n- Don\'t go off-topic into general fitness advice unless specifically asked\n- Don\'t give long walls of text\n\nCLOSING: Always end on a helpful note. If you\'ve answered their question, check if there\'s anything else you can help with. If you\'ve captured a lead or booking request, confirm what happens next.\${contextBlock}\${voiceRule}`;
+      return 'You are the AI assistant for ' + company + ', a martial arts and fitness gym. Reply like a helpful receptionist sending a text — direct, warm, brief.\n\nCRITICAL: Maximum 2 short sentences per reply. No exceptions. Never write more than 2 sentences.\n\nNEVER open with filler like "Great question!", "Absolutely!", "Of course!", "Certainly!" — get straight to the answer.\n\nUSING YOUR KNOWLEDGE:\nThe website content below is your primary source of truth. When it contains the answer — addresses, locations, phone numbers, prices, class names, coach names, opening hours — state it directly and confidently. Do NOT say "I don\'t have that information" if the answer is in the website content below.\nIf the answer is genuinely not in the website content, say so in one sentence and suggest they contact the gym.\nNever invent specific facts (prices, times, names) not found in the website content.\n\nYOUR JOBS:\n1. Answer questions using the website content — directly and confidently\n2. Help people book a trial or taster session — get their name, interest, and preferred time\n3. Capture leads — offer a free trial as a low-pressure next step' + contextBlock + voiceRule;
     }
 
     // ── VOICE CALL (Vapi) ────────────────────────────────────────────────────────
-    //
-    // KEY FIX: Pass a TRANSIENT assistant config as the ONLY argument to vapi.start().
-    // Do NOT pass an assistant ID alongside a config object.
-    // Do NOT use top-level 'systemPrompt' — it must be inside model.messages[].
-    // Voice provider string for ElevenLabs MUST be '11labs', not 'elevenlabs'.
-    //
     function startVoiceCall() {
       const orb        = document.getElementById('voice-orb');
       const statusEl   = document.getElementById('voice-status');
       const transcript = document.getElementById('voice-transcript');
 
-      // Reset UI
-      orb.className        = 'voice-orb connecting';
-      statusEl.textContent = 'Connecting…';
-      statusEl.className   = 'voice-status-label';
+      orb.className          = 'voice-orb connecting';
+      statusEl.textContent   = 'Connecting…';
+      statusEl.className     = 'voice-status-label';
       transcript.textContent = 'Connecting to AI receptionist…';
 
       try {
@@ -1372,12 +1334,11 @@ WHAT TO AVOID:\n- NEVER state a location, city, or address unless it is explicit
 
         vapi = new VapiSDK(VAPI_PUBLIC_KEY);
 
-        // ── Events ──────────────────────────────────────────
         vapi.on('call-start', () => {
           vapiActive = true;
-          orb.className        = 'voice-orb listening';
-          statusEl.textContent = 'Listening…';
-          statusEl.className   = 'voice-status-label active';
+          orb.className          = 'voice-orb listening';
+          statusEl.textContent   = 'Listening…';
+          statusEl.className     = 'voice-status-label active';
           transcript.textContent = 'Go ahead — ask anything about classes, pricing or booking a free trial.';
         });
 
@@ -1400,54 +1361,40 @@ WHAT TO AVOID:\n- NEVER state a location, city, or address unless it is explicit
         });
 
         vapi.on('call-end', () => {
-          vapiActive = false;
-          orb.className        = 'voice-orb idle';
-          statusEl.textContent = 'Call ended';
-          statusEl.className   = 'voice-status-label';
+          vapiActive             = false;
+          orb.className          = 'voice-orb idle';
+          statusEl.textContent   = 'Call ended';
+          statusEl.className     = 'voice-status-label';
           transcript.textContent = 'Thanks for chatting! The team will be in touch.';
         });
 
         vapi.on('error', (e) => {
           console.error('Vapi error:', e);
-          vapiActive = false;
-          orb.className        = 'voice-orb idle';
-          statusEl.textContent = 'Connection error';
-          statusEl.className   = 'voice-status-label error';
+          vapiActive             = false;
+          orb.className          = 'voice-orb idle';
+          statusEl.textContent   = 'Connection error';
+          statusEl.className     = 'voice-status-label error';
           transcript.textContent = 'Could not connect. Please try again or use Live Chat instead.';
         });
 
-        // ── Build system prompt ──────────────────────────────
-        const systemPrompt = buildSystemPrompt('voice');
-
-        // ── START — transient assistant config (no assistant ID) ─
-        // provider for ElevenLabs = '11labs' (NOT 'elevenlabs')
         vapi.start({
-          name: `${company} Receptionist`,
-          firstMessage: `Hi ${leadName}! Thanks for calling ${company} — how can I help you today?`,
-          transcriber: {
-            provider: 'deepgram',
-            model: 'nova-2',
-            language: 'en-GB'
-          },
-          voice: {
-            provider: '11labs',
-            voiceId: 'sarah'
-          },
+          name: company + ' Receptionist',
+          firstMessage: 'Hi ' + leadName + '! Thanks for calling ' + company + ' — how can I help you today?',
+          transcriber: { provider: 'deepgram', model: 'nova-2', language: 'en-GB' },
+          voice: { provider: '11labs', voiceId: 'sarah' },
           model: {
             provider: 'openai',
             model: 'gpt-4o-mini',
-            messages: [
-              { role: 'system', content: systemPrompt }
-            ]
+            messages: [{ role: 'system', content: buildSystemPrompt('voice') }]
           }
         });
 
       } catch (err) {
         console.error('Vapi init error:', err);
-        orb.className        = 'voice-orb idle';
-        statusEl.textContent = 'Unavailable';
-        statusEl.className   = 'voice-status-label error';
-        transcript.textContent = `Voice unavailable: ${err.message}. Please use Live Chat instead.`;
+        orb.className          = 'voice-orb idle';
+        statusEl.textContent   = 'Unavailable';
+        statusEl.className     = 'voice-status-label error';
+        transcript.textContent = 'Voice unavailable: ' + err.message + '. Please use Live Chat instead.';
       }
     }
 
@@ -1457,10 +1404,7 @@ WHAT TO AVOID:\n- NEVER state a location, city, or address unless it is explicit
         vapi = null;
       }
       vapiActive = false;
-      setTimeout(() => {
-        showScreen('mode');
-        selectedMode = null;
-      }, 800);
+      setTimeout(() => { showScreen('mode'); selectedMode = null; }, 800);
     }
 
     // ── CTA ─────────────────────────────────────────────────────────────────────
@@ -1475,7 +1419,6 @@ WHAT TO AVOID:\n- NEVER state a location, city, or address unless it is explicit
       if (!gymUrl) { ldr.classList.add('gone'); return; }
       img.onload  = () => { ldr.classList.add('gone'); img.style.display = 'block'; };
       img.onerror = () => { ldr.classList.add('gone'); };
-      // Use Microlink with mobile viewport
       img.src = `https://api.microlink.io?url=${encodeURIComponent(gymUrl)}&screenshot=true&embed=screenshot.url&meta=false&viewport.width=390&viewport.height=844&viewport.isMobile=true&viewport.deviceScaleFactor=2`;
     }
 
@@ -1546,7 +1489,7 @@ WHAT TO AVOID:\n- NEVER state a location, city, or address unless it is explicit
     }
 
     function initChatPhone(name) {
-      addMsgPhone(`Hi ${name}! I'm the AI assistant for ${company}. What would you like to know? 👊`, 'bot');
+      addMsgPhone('Hi ' + name + '! I\'m the AI assistant for ' + company + ' — ask me anything. 👊', 'bot');
       setTimeout(() => document.getElementById('cp-inp-phone').focus(), 80);
     }
 
@@ -1622,27 +1565,22 @@ WHAT TO AVOID:\n- NEVER state a location, city, or address unless it is explicit
         const VapiSDK = window._VapiClass;
         if (!VapiSDK || typeof VapiSDK !== 'function') throw new Error('Vapi SDK not loaded yet');
         vapiPhone = new VapiSDK(VAPI_PUBLIC_KEY);
-        vapiPhone.on('call-start', () => {
-          vapiActivePhone = true;
-          orb.className = 'voice-orb listening';
-          statusEl.textContent = 'Listening…'; statusEl.className = 'voice-status-label active';
-          transcript.textContent = 'Go ahead — ask anything!';
-        });
+        vapiPhone.on('call-start', () => { vapiActivePhone = true; orb.className = 'voice-orb listening'; statusEl.textContent = 'Listening…'; statusEl.className = 'voice-status-label active'; transcript.textContent = 'Go ahead — ask anything!'; });
         vapiPhone.on('speech-start', () => { orb.className = 'voice-orb speaking'; statusEl.textContent = 'AI Speaking…'; statusEl.className = 'voice-status-label speaking'; });
         vapiPhone.on('speech-end',   () => { orb.className = 'voice-orb listening'; statusEl.textContent = 'Listening…'; statusEl.className = 'voice-status-label active'; });
         vapiPhone.on('message', (msg) => { if (msg.type === 'transcript' && msg.transcriptType === 'final') transcript.textContent = msg.transcript; });
         vapiPhone.on('call-end', () => { vapiActivePhone = false; orb.className = 'voice-orb idle'; statusEl.textContent = 'Call ended'; statusEl.className = 'voice-status-label'; transcript.textContent = 'Thanks for chatting!'; });
         vapiPhone.on('error', (e) => { console.error(e); vapiActivePhone = false; orb.className = 'voice-orb idle'; statusEl.textContent = 'Connection error'; statusEl.className = 'voice-status-label error'; transcript.textContent = 'Could not connect. Please use Live Chat instead.'; });
         vapiPhone.start({
-          name: `${company} Receptionist`,
-          firstMessage: `Hi ${leadNamePhone}! Thanks for calling ${company} — how can I help you today?`,
+          name: company + ' Receptionist',
+          firstMessage: 'Hi ' + leadNamePhone + '! Thanks for calling ' + company + ' — how can I help you today?',
           transcriber: { provider: 'deepgram', model: 'nova-2', language: 'en-GB' },
           voice: { provider: '11labs', voiceId: 'sarah' },
           model: { provider: 'openai', model: 'gpt-4o-mini', messages: [{ role: 'system', content: buildSystemPrompt('voice') }] }
         });
       } catch (err) {
         orb.className = 'voice-orb idle'; statusEl.textContent = 'Unavailable'; statusEl.className = 'voice-status-label error';
-        transcript.textContent = `Voice unavailable: ${err.message}`;
+        transcript.textContent = 'Voice unavailable: ' + err.message;
       }
     }
 
@@ -1657,18 +1595,14 @@ WHAT TO AVOID:\n- NEVER state a location, city, or address unless it is explicit
     loadPhoneScreenshot();
     scrapeAndTrain();
 
-    // Once scrape is ready, also enable phone chat
     const _origSetReady = setReady;
     setReady = function() { _origSetReady(); setupPhoneReady(); };
 
-    // Personalise phone panel
     document.getElementById('cp-name-phone').textContent       = `${company} Assistant`;
     document.getElementById('mode-gym-name-phone').textContent = company;
 
-    // Prevent scroll bleed
     document.getElementById('cp-msgs').addEventListener('wheel', e => e.stopPropagation(), { passive: true });
     document.getElementById('cp-msgs-phone').addEventListener('wheel', e => e.stopPropagation(), { passive: true });
   </script>
 </body>
 </html>
-
