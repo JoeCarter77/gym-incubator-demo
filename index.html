@@ -268,7 +268,8 @@
       position: relative; z-index: 1;
       background: var(--card);
       border-top: 1px solid var(--border);
-      padding: 64px 48px;
+      margin-top: 48px;
+      padding: 48px 48px;
     }
     .cta-full-inner {
       max-width: 1280px; margin: 0 auto;
@@ -277,19 +278,19 @@
     }
     .cta-full-text h2 {
       font-family: var(--font-head);
-      font-size: clamp(1.8rem, 3vw, 2.8rem);
+      font-size: clamp(1.6rem, 2.6vw, 2.2rem);
       font-weight: 800; letter-spacing: -0.035em;
-      line-height: 1.1; margin-bottom: 12px;
+      line-height: 1.1; margin-bottom: 10px;
     }
     .cta-full-text p {
-      font-size: 0.95rem; color: var(--grey);
+      font-size: 0.88rem; color: var(--grey);
       line-height: 1.7; max-width: 520px;
     }
     .btn-cta-full {
       flex-shrink: 0;
       background: var(--lime); color: #000;
-      font-family: var(--font-head); font-size: 1rem; font-weight: 800;
-      letter-spacing: -0.01em; padding: 18px 36px;
+      font-family: var(--font-head); font-size: 0.95rem; font-weight: 800;
+      letter-spacing: -0.01em; padding: 16px 32px;
       border-radius: 10px; border: none; cursor: pointer;
       text-decoration: none; white-space: nowrap;
       transition: background 0.15s, transform 0.12s;
@@ -298,9 +299,9 @@
     .btn-cta-full:active { transform: scale(0.97); }
 
     @media (max-width: 980px) {
-      .cta-full { padding: 48px 20px; }
-      .cta-full-inner { flex-direction: column; align-items: flex-start; gap: 24px; }
-      .btn-cta-full { width: 100%; text-align: center; padding: 16px 24px; }
+      .cta-full { padding: 40px 20px; margin-top: 32px; }
+      .cta-full-inner { flex-direction: column; align-items: flex-start; gap: 20px; }
+      .btn-cta-full { width: 100%; text-align: center; padding: 14px 24px; }
     }
 
     @keyframes spin       { to { transform: rotate(360deg); } }
