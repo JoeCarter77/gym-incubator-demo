@@ -622,7 +622,8 @@
     const VAPI_PUBLIC_KEY = 'a154a7cb-a164-4fd8-bf2d-6b3aaba450a0';
 
     const p         = new URLSearchParams(window.location.search);
-    const firstName = p.get('first_name') || '';
+    const _fn = p.get('first_name') || '';
+    const firstName = (_fn === 'FAILED_OWNER' || _fn === 'FAILED_SCRAPE') ? '' : _fn;
     const company   = p.get('company')    || 'Your Gym';
     const gymUrl    = p.get('url')        || '';
 
