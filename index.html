@@ -206,18 +206,18 @@
     .intro-text-title strong { color: var(--lime); }
     .intro-text-sub { font-size: 0.95rem; color: var(--grey); line-height: 1.75; font-weight: 300; }
 
-    .click-hint {
+    .left-click-hint {
+      font-size: 0.82rem; font-weight: 600;
+      color: var(--lime); letter-spacing: 0.02em;
+      margin-bottom: -12px;
+    }
       font-size: 0.78rem; font-weight: 600;
       color: var(--lime);
       letter-spacing: 0.04em;
       margin-top: 4px;
     }
-    .hint-arrow-mobile { display: none; }
-    .hint-arrow-desktop { display: inline; }
-    @media (max-width: 980px) {
-      .hint-arrow-mobile { display: inline; }
-      .hint-arrow-desktop { display: none; }
-    }
+    .hint-arrow-mobile { display: inline; }
+    .hint-arrow-desktop { display: none; }
     .stats { display: grid; grid-template-columns: repeat(3,1fr); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; background: var(--card); }
     .stat { padding: 22px 12px; text-align: center; border-right: 1px solid var(--border); }
     .stat:last-child { border-right: none; }
@@ -366,34 +366,31 @@
 
     /* ── FOUNDER STRIP ── */
     .founder-strip {
-      display: flex; flex-direction: column; gap: 10px;
-      padding: 16px 18px;
+      display: flex; flex-direction: column; gap: 20px;
+      padding: 28px 24px;
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: var(--radius);
     }
     .founder-faces {
-      display: flex; align-items: center; gap: 12px;
+      display: flex; align-items: center; gap: 16px;
     }
     .founder-avatar {
-      width: 48px; height: 48px; border-radius: 50%;
+      width: 64px; height: 64px; border-radius: 50%;
       border: 2px solid var(--border-hi);
       object-fit: cover;
       background: #1a1a1a;
       flex-shrink: 0;
-      /* remove white background from PNG */
-      mix-blend-mode: normal;
     }
-    .founder-info { display: flex; flex-direction: column; gap: 1px; }
-    .founder-name { font-size: 0.72rem; font-weight: 700; color: var(--white); letter-spacing: 0.02em; }
-    .founder-role { font-size: 0.62rem; color: var(--grey-dk); }
-    .founder-divider { width: 1px; height: 36px; background: var(--border-hi); flex-shrink: 0; }
+    .founder-info { display: flex; flex-direction: column; gap: 3px; }
+    .founder-name { font-size: 0.9rem; font-weight: 700; color: var(--white); letter-spacing: 0.01em; }
+    .founder-role { font-size: 0.72rem; color: var(--grey-dk); }
+    .founder-divider { width: 1px; height: 48px; background: var(--border-hi); flex-shrink: 0; }
     .founder-tagline {
-      font-size: 0.72rem; font-weight: 400;
-      color: var(--grey); line-height: 1.5;
+      font-size: 0.88rem; font-weight: 400;
+      color: var(--grey); line-height: 1.6;
       border-top: 1px solid var(--border);
-      padding-top: 10px;
-      margin-top: 2px;
+      padding-top: 16px;
     }
     .founder-tagline strong { color: var(--white); font-weight: 600; }
 
@@ -421,7 +418,22 @@
       flex-shrink: 0;
     }
 
-    /* ── CASE STUDY STRIP ── */
+    .right-cta-link {
+      display: inline-flex; align-items: center;
+      font-size: 0.82rem; font-weight: 700;
+      color: var(--lime);
+      text-decoration: none;
+      letter-spacing: 0.01em;
+      margin-top: 2px;
+      transition: opacity 0.15s;
+    }
+    .right-cta-link:hover { opacity: 0.75; }
+    .case-strip-context {
+      font-size: 0.78rem; font-weight: 400;
+      color: var(--grey); line-height: 1.6;
+      border-top: 1px solid var(--border-hi);
+      padding-top: 10px;
+    }
     .case-strip {
       position: relative; z-index: 1;
       border-top: 1px solid var(--border);
@@ -511,8 +523,10 @@
       <div class="eyebrow fu">Personalised for your gym</div>
 
       <h1 class="fu fu-1">
-        <span class="lime" id="hero-name">Your Gym</span>'s Growth System,<br>Starting Here
+        <span class="lime" id="hero-name">Your Gym</span>'s Done-For-You Growth System,<br>Starting Here
       </h1>
+
+      <p class="left-click-hint fu fu-1"><span class="hint-arrow-desktop">←</span><span class="hint-arrow-mobile">↓</span> Click the icon and ask it something — "How much is membership?" or "Do you offer a free trial?"</p>
 
       <!-- Browser mockup -->
       <div class="browser-wrap fu fu-2">
@@ -681,20 +695,10 @@
     <div class="right fu fu-2">
 
       <div class="intro-text">
-        <p class="intro-text-title">Hi <strong id="hero-firstname">there</strong>, this isn't just an AI sales assistant.</p>
-        <p class="intro-text-sub">It's the front door to a full growth system — automated follow-up, lead pipelines, booking and reactivation campaigns. This is step 1.</p>
-
-        <div class="platform-list">
-          <div class="platform-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>AI sales assistant (chat + voice)</div>
-          <div class="platform-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Automated lead nurture sequences</div>
-          <div class="platform-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Live pipeline dashboard</div>
-          <div class="platform-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Automated booking</div>
-          <div class="platform-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Reactivation campaigns + revenue reporting</div>
-        </div>
-
-        <p class="click-hint"><span class="hint-arrow-desktop">←</span><span class="hint-arrow-mobile">↓</span> Click the icon on your website to try Chat or Voice</p>
+        <p class="intro-text-title">Hi <strong id="hero-firstname">there</strong> — this is the bit your leads see.</p>
+        <p class="intro-text-sub">What's behind it — the automations, the follow-up sequences, the pipeline, and us — is what made Nexus BJJ £70k.</p>
+        <a class="right-cta-link" href="https://gym-incubator-setup.lovable.app/">See the full system that made this happen →</a>
       </div>
-
 
       <div class="founder-strip">
         <div class="founder-faces">
@@ -711,11 +715,6 @@
           </div>
         </div>
         <div class="founder-tagline"><strong>Built by gym growth specialists,</strong> not a faceless agency.</div>
-      </div>
-      <div class="stats">
-        <div class="stat"><div class="stat-n">24/7</div><div class="stat-l">Available</div></div>
-        <div class="stat"><div class="stat-n">&lt;2s</div><div class="stat-l">Response</div></div>
-        <div class="stat"><div class="stat-n">∞</div><div class="stat-l">Questions</div></div>
       </div>
 
 
@@ -748,7 +747,8 @@
         <div class="case-strip-quote">
           <p>"The automation does the heavy lifting — all we do is convert them when they walk through the door."</p>
           <span>— Tom, Owner · Nexus BJJ</span>
-          <a class="case-strip-btn" href="https://gym-incubator-setup.lovable.app/">See how we added £70k to Nexus BJJ →</a>
+          <div class="case-strip-context">The AI assistant above was step 1. The automated follow-up, lead pipeline, reactivation campaigns and hands-on support behind it is what turned that into £70k.</div>
+          <a class="case-strip-btn" href="https://gym-incubator-setup.lovable.app/">See how we built the full system →</a>
         </div>
       </div>
     </div>
