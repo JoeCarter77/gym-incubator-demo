@@ -419,15 +419,19 @@
     }
 
     .right-cta-link {
-      display: inline-flex; align-items: center;
-      font-size: 0.82rem; font-weight: 700;
-      color: var(--lime);
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      background: var(--lime); color: #000;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.88rem; font-weight: 800;
+      padding: 14px 20px;
       text-decoration: none;
-      letter-spacing: 0.01em;
-      margin-top: 2px;
-      transition: opacity 0.15s;
+      letter-spacing: -0.01em;
+      margin-top: 4px;
+      transition: background 0.15s, transform 0.12s;
+      border-radius: 0;
+      width: 100%;
     }
-    .right-cta-link:hover { opacity: 0.75; }
+    .right-cta-link:hover { background: var(--lime-hi); transform: translateY(-1px); }
     .case-strip-context {
       font-size: 0.78rem; font-weight: 400;
       color: var(--grey); line-height: 1.6;
@@ -745,7 +749,7 @@
           <div class="case-strip-sub">To first results</div>
         </div>
         <div class="case-strip-quote">
-          <p>"The automation does the heavy lifting — all we do is convert them when they walk through the door."</p>
+          <p>"Gym Incubator does the heavy lifting — all we do is convert them when they walk through the door."</p>
           <span>— Tom, Owner · Nexus BJJ</span>
           <div class="case-strip-context">The AI assistant above was step 1. The automated follow-up, lead pipeline, reactivation campaigns and hands-on support behind it is what turned that into £70k.</div>
           <a class="case-strip-btn" href="https://gym-incubator-setup.lovable.app/">See how we built the full system →</a>
