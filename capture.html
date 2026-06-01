@@ -427,9 +427,10 @@
         }).catch(function(){});
       }
 
-      // Build redirect URL with %20 for spaces
-      const params = new URLSearchParams({ first_name: fn, company: gn, url: url });
-      const paramStr = params.toString().replace(/\+/g, '%20');
+      // Build redirect URL — encode name/company but keep url raw so https:// isn't double-encoded
+      const paramStr = 'first_name=' + encodeURIComponent(fn)
+                     + '&company='   + encodeURIComponent(gn)
+                     + '&url='       + url;
 
       await new Promise(function(r){ setTimeout(r, 380); });
       window.location.href = DEMO_BASE + '?' + paramStr;
