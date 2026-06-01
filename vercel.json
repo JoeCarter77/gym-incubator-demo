@@ -1,5 +1,6 @@
 {
   "rewrites": [
+    { "source": "/capture", "destination": "/capture.html" },
     { "source": "/api/(.*)", "destination": "/api/$1" }
   ],
   "headers": [
