@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>See Your Gym's System — Gym Incubator</title>
-  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -16,7 +16,7 @@
       --grey-2: #1a1a1a;
       --border: rgba(255,255,255,0.08);
       --muted: rgba(255,255,255,0.42);
-      --font-display: 'Anton', sans-serif;
+      --font-display: 'Inter', sans-serif;
       --font-body: 'Inter', sans-serif;
     }
 
@@ -122,11 +122,10 @@
     /* Heading — Anton, massive, matches demo heading weight */
     h1 {
       font-family: var(--font-display);
-      font-size: clamp(40px, 8vw, 64px);
-      font-weight: 400; /* Anton is always bold */
-      line-height: 1.0;
-      letter-spacing: 0.01em;
-      text-transform: uppercase;
+      font-size: clamp(2.2rem, 3.6vw, 3.4rem);
+      font-weight: 800;
+      line-height: 1.05;
+      letter-spacing: -0.035em;
       color: var(--white);
       margin-bottom: 20px;
     }
@@ -249,10 +248,11 @@
 
     .stat-num {
       font-family: var(--font-display);
-      font-size: 26px;
+      font-size: 2rem;
+      font-weight: 800;
       color: var(--white);
       line-height: 1;
-      letter-spacing: 0.01em;
+      letter-spacing: -0.05em;
     }
 
     .stat-num .g { color: var(--green); }
@@ -312,7 +312,7 @@
       </div>
 
       <div class="fu">
-        <h1>Your gym.<br><span class="green">Running itself</span><br>while you sleep.</h1>
+        <h1>Your gym. <span class="green">Growing itself</span> while you coach.</h1>
       </div>
 
       <div class="fu">
