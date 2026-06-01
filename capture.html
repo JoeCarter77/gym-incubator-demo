@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>See Your Gym's System — Gym Incubator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black: #000000;
+      --white: #ffffff;
+      --green: #aaee00;
+      --grey: #111111;
+      --grey-2: #1a1a1a;
+      --border: rgba(255,255,255,0.08);
+      --muted: rgba(255,255,255,0.42);
+      --font-display: 'Anton', sans-serif;
+      --font-body: 'Inter', sans-serif;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--black);
+      color: var(--white);
+      font-family: var(--font-body);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* ── NAV ── */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      height: 52px;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      z-index: 10;
+    }
+
+    /* Logo matches demo exactly: "GYM" white, "INCUBATOR" green, bold spaced caps */
+    .logo {
+      font-family: var(--font-body);
+      font-weight: 700;
+      font-size: 15px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      text-decoration: none;
+      display: flex;
+      gap: 6px;
+    }
+
+    .logo-gym  { color: var(--white); }
+    .logo-inc  { color: var(--green); }
+
+    .nav-pill {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--white);
+      background: transparent;
+      border: 1.5px solid var(--green);
+      border-radius: 100px;
+      padding: 5px 14px;
+    }
+
+    .live-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--green);
+      border-radius: 50%;
+      animation: blink 2s ease-in-out infinite;
+    }
+
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.25} }
+
+    /* ── MAIN ── */
+    main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 64px 24px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 480px;
+    }
+
+    /* Eyebrow — matches the "PERSONALISED FOR YOUR GYM" tag style on demo */
+    .eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-family: var(--font-body);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--green);
+      margin-bottom: 20px;
+    }
+
+    .eyebrow-line {
+      width: 28px;
+      height: 1.5px;
+      background: var(--green);
+      flex-shrink: 0;
+    }
+
+    /* Heading — Anton, massive, matches demo heading weight */
+    h1 {
+      font-family: var(--font-display);
+      font-size: clamp(40px, 8vw, 64px);
+      font-weight: 400; /* Anton is always bold */
+      line-height: 1.0;
+      letter-spacing: 0.01em;
+      text-transform: uppercase;
+      color: var(--white);
+      margin-bottom: 20px;
+    }
+
+    h1 .green { color: var(--green); }
+
+    .subtext {
+      font-size: 15px;
+      line-height: 1.65;
+      color: var(--muted);
+      font-weight: 300;
+      margin-bottom: 36px;
+    }
+
+    /* ── FORM ── */
+    label {
+      display: block;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 7px;
+    }
+
+    .form-group { margin-bottom: 13px; }
+
+    input {
+      width: 100%;
+      background: var(--grey-2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 13px 16px;
+      font-family: var(--font-body);
+      font-size: 15px;
+      font-weight: 400;
+      color: var(--white);
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      -webkit-appearance: none;
+    }
+
+    input::placeholder { color: rgba(255,255,255,0.18); }
+
+    input:focus {
+      border-color: rgba(170,238,0,0.45);
+      box-shadow: 0 0 0 3px rgba(170,238,0,0.06);
+    }
+
+    input.err { border-color: rgba(255,80,80,0.5); }
+
+    .error-msg {
+      font-size: 11.5px;
+      color: #ff6060;
+      margin-top: 5px;
+      display: none;
+    }
+    .error-msg.show { display: block; }
+
+    /* ── BUTTON — matches demo's big green CTA ── */
+    .cta-wrap { margin-top: 24px; }
+
+    button {
+      width: 100%;
+      background: var(--green);
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      padding: 16px 24px;
+      font-family: var(--font-body);
+      font-weight: 700;
+      font-size: 15px;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      position: relative;
+      overflow: hidden;
+      transition: opacity 0.15s, transform 0.15s;
+    }
+
+    button:hover { opacity: 0.9; transform: translateY(-1px); }
+    button:active { transform: translateY(0); }
+
+    .btn-arrow { transition: transform 0.18s; font-size: 16px; }
+    button:hover .btn-arrow { transform: translateX(4px); }
+
+    button.loading { opacity: 0.6; pointer-events: none; }
+    button.loading .btn-inner { opacity: 0; }
+    button.loading::after {
+      content: '';
+      position: absolute;
+      width: 18px; height: 18px;
+      border: 2px solid rgba(0,0,0,0.2);
+      border-top-color: #000;
+      border-radius: 50%;
+      animation: spin 0.55s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .trust {
+      margin-top: 14px;
+      text-align: center;
+      font-size: 11.5px;
+      color: var(--muted);
+      font-weight: 300;
+    }
+
+    /* ── STATS ── */
+    .stats {
+      margin-top: 44px;
+      padding-top: 28px;
+      border-top: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .stat-num {
+      font-family: var(--font-display);
+      font-size: 26px;
+      color: var(--white);
+      line-height: 1;
+      letter-spacing: 0.01em;
+    }
+
+    .stat-num .g { color: var(--green); }
+
+    .stat-label {
+      font-size: 11.5px;
+      color: var(--muted);
+      margin-top: 5px;
+      font-weight: 300;
+      line-height: 1.45;
+    }
+
+    /* Entrance animations */
+    .fu {
+      opacity: 0;
+      transform: translateY(16px);
+      animation: up 0.45s cubic-bezier(0.22,1,0.36,1) forwards;
+    }
+    .fu:nth-child(1){animation-delay:0.04s}
+    .fu:nth-child(2){animation-delay:0.10s}
+    .fu:nth-child(3){animation-delay:0.16s}
+    .fu:nth-child(4){animation-delay:0.22s}
+    .fu:nth-child(5){animation-delay:0.28s}
+    .fu:nth-child(6){animation-delay:0.34s}
+    .fu:nth-child(7){animation-delay:0.40s}
+    @keyframes up { to { opacity:1; transform:translateY(0); } }
+
+    @media(max-width:480px){
+      nav { padding: 0 20px; }
+      main { padding: 44px 20px; }
+      .stats { gap: 12px; }
+      .stat-num { font-size: 22px; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a class="logo" href="https://www.gym-incubator.com">
+      <span class="logo-gym">GYM</span>
+      <span class="logo-inc">INCUBATOR</span>
+    </a>
+    <div class="nav-pill">
+      <span class="live-dot"></span>
+      Free Demo
+    </div>
+  </nav>
+
+  <main>
+    <div class="container">
+
+      <div class="fu">
+        <div class="eyebrow">
+          <span class="eyebrow-line"></span>
+          Built for your gym
+        </div>
+      </div>
+
+      <div class="fu">
+        <h1>Your gym.<br><span class="green">Running itself</span><br>while you sleep.</h1>
+      </div>
+
+      <div class="fu">
+        <p class="subtext">
+          Drop your details and we'll pull your website, build your system, and show you exactly what happens to every enquiry your gym gets — starting right now.
+        </p>
+      </div>
+
+      <form id="captureForm" novalidate>
+
+        <div class="fu">
+          <div class="form-group">
+            <label for="firstName">Your first name</label>
+            <input type="text" id="firstName" placeholder="e.g. Marcus" autocomplete="given-name" />
+            <div class="error-msg" id="firstNameErr">Enter your first name</div>
+          </div>
+        </div>
+
+        <div class="fu">
+          <div class="form-group">
+            <label for="gymName">Gym name</label>
+            <input type="text" id="gymName" placeholder="e.g. Apex BJJ" autocomplete="organization" />
+            <div class="error-msg" id="gymNameErr">Enter your gym name</div>
+          </div>
+        </div>
+
+        <div class="fu">
+          <div class="form-group">
+            <label for="websiteUrl">Gym website</label>
+            <div style="position:relative;display:flex;align-items:center;">
+              <span style="position:absolute;left:16px;font-family:var(--font-body);font-size:15px;color:#fff;pointer-events:none;user-select:none;z-index:2;">https://www.</span>
+              <input type="text" id="websiteUrl" placeholder="apexbjj.co.uk" autocomplete="url" style="padding-left:116px;" />
+            </div>
+            <div class="error-msg" id="urlErr">Enter a valid website URL</div>
+          </div>
+        </div>
+
+        <div class="fu">
+          <div class="cta-wrap">
+            <button type="submit" id="submitBtn">
+              <span class="btn-inner" style="display:flex;align-items:center;gap:9px">
+                Show me the system <span class="btn-arrow">→</span>
+              </span>
+            </button>
+          </div>
+          <p class="trust">No sign-up. No credit card. Takes 10 seconds.</p>
+        </div>
+
+      </form>
+
+      <div class="fu">
+        <div class="stats">
+          <div>
+            <div class="stat-num">24<span class="g">/7</span></div>
+            <div class="stat-label">Every enquiry answered, even at 2am</div>
+          </div>
+          <div>
+            <div class="stat-num">&lt;<span class="g">2s</span></div>
+            <div class="stat-label">Response time vs hours for most gyms</div>
+          </div>
+          <div>
+            <div class="stat-num">£<span class="g">70k</span></div>
+            <div class="stat-label">Generated for Nexus BJJ</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    const DEMO_BASE   = 'https://gym-incubator-demo.vercel.app/';
+    const GHL_WEBHOOK = ''; // paste your GHL webhook URL here
+
+    const form = document.getElementById('captureForm');
+    const btn  = document.getElementById('submitBtn');
+
+    function showErr(msgId, show) {
+      document.getElementById(msgId).classList.toggle('show', show);
+    }
+
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const fn  = document.getElementById('firstName').value.trim();
+      const gn  = document.getElementById('gymName').value.trim();
+      const raw = document.getElementById('websiteUrl').value.trim();
+
+      // Build full URL from whatever they typed after https://www.
+      const clean = raw.replace(/^(https?:\/\/)?(www\.)?/, '').trim();
+      const url   = clean ? 'https://www.' + clean : '';
+
+      // Reset errors
+      showErr('firstNameErr', false);
+      showErr('gymNameErr',   false);
+      showErr('urlErr',       false);
+
+      let ok = true;
+      if (!fn)    { showErr('firstNameErr', true); ok = false; }
+      if (!gn)    { showErr('gymNameErr',   true); ok = false; }
+      if (!clean) { showErr('urlErr',       true); ok = false; }
+      if (!ok) return;
+
+      btn.classList.add('loading');
+
+      // Fire GHL webhook non-blocking
+      if (GHL_WEBHOOK) {
+        fetch(GHL_WEBHOOK, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ first_name: fn, company: gn, url: url, source: 'ad-capture' })
+        }).catch(function(){});
+      }
+
+      // Build redirect URL with %20 for spaces
+      const params = new URLSearchParams({ first_name: fn, company: gn, url: url });
+      const paramStr = params.toString().replace(/\+/g, '%20');
+
+      await new Promise(function(r){ setTimeout(r, 380); });
+      window.location.href = DEMO_BASE + '?' + paramStr;
+    });
+  </script>
+
+</body>
+</html>
