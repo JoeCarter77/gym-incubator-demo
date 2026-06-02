@@ -438,6 +438,92 @@
     }
     .right-cta-link:hover { background: var(--lime-hi); transform: translateY(-1px); box-shadow: 0 0 0 4px rgba(170,255,0,0.35); }
     .right-cta-link svg { width: 18px; height: 18px; flex-shrink: 0; }
+    /* ── SYSTEM PILLARS ── */
+    .pillars-section {
+      position: relative; z-index: 1;
+      border-top: 1px solid var(--border);
+      padding: 72px 0 64px;
+      background: var(--black);
+    }
+    .pillars-inner {
+      max-width: 1280px; margin: 0 auto;
+      padding: 0 48px;
+    }
+    .pillars-header { text-align: center; margin-bottom: 56px; }
+    .pillars-eyebrow {
+      font-size: 0.68rem; font-weight: 700;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--lime); margin-bottom: 16px;
+    }
+    .pillars-title {
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 800; letter-spacing: -0.035em;
+      line-height: 1.05; color: var(--white); margin-bottom: 12px;
+    }
+    .pillars-title span { color: var(--lime); }
+    .pillars-sub { font-size: 0.95rem; font-weight: 300; color: var(--grey); line-height: 1.6; }
+    .pillars-grid {
+      display: grid;
+      grid-template-columns: 1fr 1px 1fr 1px 1fr;
+    }
+    .pillar-divider { background: var(--border); }
+    .pillar-col { padding: 0 40px; }
+    .pillar-col:first-child { padding-left: 0; }
+    .pillar-col:last-child { padding-right: 0; }
+    .pillar-col-label {
+      font-size: 0.68rem; font-weight: 800;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--lime);
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 24px;
+    }
+    .pillar-items { display: flex; flex-direction: column; gap: 20px; }
+    .pillar-item { display: flex; align-items: flex-start; gap: 12px; }
+    .pillar-item-icon {
+      width: 32px; height: 32px; flex-shrink: 0;
+      background: var(--lime-lo); border: 1px solid var(--lime-bd);
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 6px;
+    }
+    .pillar-item-icon svg { width: 15px; height: 15px; stroke: var(--lime); }
+    .pillar-item-title { font-size: 0.85rem; font-weight: 700; color: var(--white); margin-bottom: 3px; line-height: 1.2; }
+    .pillar-item-desc { font-size: 0.75rem; font-weight: 300; color: var(--grey); line-height: 1.55; }
+    .pillars-footer {
+      display: flex; align-items: center; gap: 24px;
+      margin-top: 56px;
+    }
+    .pillars-footer-line { flex: 1; height: 1px; background: var(--border); }
+    .pillars-cta-wrap {
+      display: flex; justify-content: center;
+      margin-top: 28px;
+    }
+    .pillars-cta-btn {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: transparent;
+      border: 1px solid var(--lime-bd);
+      color: var(--lime);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem; font-weight: 700;
+      letter-spacing: -0.01em;
+      padding: 14px 28px;
+      text-decoration: none;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .pillars-cta-btn:hover { background: var(--lime-lo); border-color: var(--lime); }
+    .pillars-cta-btn svg { width: 15px; height: 15px; }
+      font-size: 1.1rem; font-weight: 800;
+      letter-spacing: -0.02em; color: var(--white);
+      white-space: nowrap;
+    }
+    @media (max-width: 980px) {
+      .pillars-inner { padding: 0 20px; }
+      .pillars-grid { grid-template-columns: 1fr; }
+      .pillar-divider { display: none; }
+      .pillar-col { padding: 0; border-top: 1px solid var(--border); padding-top: 32px; margin-top: 8px; }
+      .pillar-col:first-child { border-top: none; padding-top: 0; margin-top: 0; }
+    }
+
     .case-strip-context {
       font-size: 0.78rem; font-weight: 400;
       color: var(--grey); line-height: 1.6;
@@ -738,6 +824,128 @@
 
 
   </div><!-- /page -->
+
+  <!-- ══ SYSTEM PILLARS ══ -->
+  <div class="pillars-section">
+    <div class="pillars-inner">
+      <div class="pillars-header">
+        <div class="pillars-eyebrow">— The full system</div>
+        <h2 class="pillars-title">Every part of your growth.<br><span>Done for you.</span></h2>
+        <p class="pillars-sub">Most agencies do one or two of these. We do all of it.</p>
+      </div>
+      <div class="pillars-grid">
+        <div class="pillar-col">
+          <div class="pillar-col-label">Get Leads</div>
+          <div class="pillar-items">
+            <div class="pillar-item">
+              <div class="pillar-item-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M8.56 2.75c4.37 6.03 6.02 9.42 8.03 17.72m2.54-15.38c-3.72 4.35-8.94 5.66-16.88 5.85m19.5 1.9c-3.5-.93-6.63-.82-8.94 0-2.37.85-3.29 2.22-3.32 3.64"/></svg>
+              </div>
+              <div>
+                <div class="pillar-item-title">Social Media Management</div>
+                <div class="pillar-item-desc">Content, posting and growth across your channels</div>
+              </div>
+            </div>
+            <div class="pillar-item">
+              <div class="pillar-item-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+              </div>
+              <div>
+                <div class="pillar-item-title">Lead Flow Optimisation</div>
+                <div class="pillar-item-desc">Website, ads, funnel optimisation to drive enquiries</div>
+              </div>
+            </div>
+            <div class="pillar-item">
+              <div class="pillar-item-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              </div>
+              <div>
+                <div class="pillar-item-title">AI Sales Assistant</div>
+                <div class="pillar-item-desc">Chat + voice, live on your site 24/7 — responds in under 2 seconds</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="pillar-divider"></div>
+        <div class="pillar-col">
+          <div class="pillar-col-label">Convert Leads</div>
+          <div class="pillar-items">
+            <div class="pillar-item">
+              <div class="pillar-item-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+              </div>
+              <div>
+                <div class="pillar-item-title">Live Pipeline Dashboard</div>
+                <div class="pillar-item-desc">Every lead tracked — where they are, what's next</div>
+              </div>
+            </div>
+            <div class="pillar-item">
+              <div class="pillar-item-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              </div>
+              <div>
+                <div class="pillar-item-title">Automated Follow-Up</div>
+                <div class="pillar-item-desc">SMS and email sequences that chase every lead automatically</div>
+              </div>
+            </div>
+            <div class="pillar-item">
+              <div class="pillar-item-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              </div>
+              <div>
+                <div class="pillar-item-title">Automated Booking</div>
+                <div class="pillar-item-desc">Leads book straight into your calendar — no back and forth</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="pillar-divider"></div>
+        <div class="pillar-col">
+          <div class="pillar-col-label">Keep &amp; Grow</div>
+          <div class="pillar-items">
+            <div class="pillar-item">
+              <div class="pillar-item-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              </div>
+              <div>
+                <div class="pillar-item-title">Reactivation Campaigns</div>
+                <div class="pillar-item-desc">Dead leads and lapsed members brought back into the pipeline</div>
+              </div>
+            </div>
+            <div class="pillar-item">
+              <div class="pillar-item-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+              </div>
+              <div>
+                <div class="pillar-item-title">Revenue Reporting</div>
+                <div class="pillar-item-desc">Pipeline value, conversion rates, and revenue tracked automatically</div>
+              </div>
+            </div>
+            <div class="pillar-item">
+              <div class="pillar-item-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+              </div>
+              <div>
+                <div class="pillar-item-title">Hands-On from Joe &amp; Josh</div>
+                <div class="pillar-item-desc">We manage and optimise the whole system — not a faceless tool</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="pillars-footer">
+        <div class="pillars-footer-line"></div>
+        <div class="pillars-footer-text">Never lose a lead again.</div>
+        <div class="pillars-footer-line"></div>
+      </div>
+      <div class="pillars-cta-wrap">
+        <a class="pillars-cta-btn" href="https://gym-incubator-setup.lovable.app/">
+          See what this looks like for your gym
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
 
   <!-- ══ CASE STUDY STRIP ══ -->
   <div class="case-strip">
