@@ -516,12 +516,20 @@
       letter-spacing: -0.02em; color: var(--white);
       white-space: nowrap;
     }
-    @media (max-width: 980px) {
+    @media (max-width: 1024px) {
       .pillars-inner { padding: 0 20px; }
-      .pillars-grid { grid-template-columns: 1fr; }
-      .pillar-divider { display: none; }
-      .pillar-col { padding: 0; border-top: 1px solid var(--border); padding-top: 32px; margin-top: 8px; }
-      .pillar-col:first-child { border-top: none; padding-top: 0; margin-top: 0; }
+      .pillars-grid {
+        grid-template-columns: 1fr 1px 1fr 1px 1fr;
+      }
+      .pillar-col { padding: 0 16px; }
+      .pillar-col:first-child { padding-left: 0; }
+      .pillar-col:last-child { padding-right: 0; }
+      .pillar-item-desc { display: none !important; }
+      .pillar-item { gap: 8px; align-items: center; }
+      .pillar-item-icon { width: 26px; height: 26px; flex-shrink: 0; }
+      .pillar-item-icon svg { width: 12px; height: 12px; }
+      .pillar-item-title { font-size: 0.72rem; line-height: 1.3; }
+      .pillar-col-label { font-size: 0.58rem; letter-spacing: 0.1em; }
     }
 
     .case-strip-context {
