@@ -1054,7 +1054,7 @@
       var timer = setTimeout(function() { if (done) return; done = true; img.src = ''; ldr.classList.add('gone'); showScreenshotFallback(img.parentElement); }, 7000);
       img.onload = function() { if (done) return; done = true; clearTimeout(timer); ldr.classList.add('gone'); img.style.display = 'block'; };
       img.onerror = function() { if (done) return; done = true; clearTimeout(timer); ldr.classList.add('gone'); showScreenshotFallback(img.parentElement); };
-      img.src = 'https://api.microlink.io?url=' + encodeURIComponent(gymUrl) + '&screenshot=true&embed=screenshot.url&meta=false&viewport.width=1280&viewport.height=900';
+      img.src = 'https://image.thum.io/get/width/1280/crop/900/noanimate/' + gymUrl;
     }
 
     function loadPhoneScreenshot() {
@@ -1065,7 +1065,7 @@
       var timer = setTimeout(function() { if (done) return; done = true; ldr.classList.add('gone'); }, 7000);
       img.onload = function() { if (done) return; done = true; clearTimeout(timer); ldr.classList.add('gone'); img.style.display = 'block'; };
       img.onerror = function() { if (done) return; done = true; clearTimeout(timer); ldr.classList.add('gone'); };
-      img.src = 'https://api.microlink.io?url=' + encodeURIComponent(gymUrl) + '&screenshot=true&embed=screenshot.url&meta=false&device=iphone&viewport.width=390&viewport.height=844';
+      img.src = 'https://image.thum.io/get/width/390/crop/844/noanimate/' + gymUrl;
     }
 
     // ── SCRAPE ──
