@@ -372,20 +372,11 @@
     <div class="container">
 
       <div class="fu">
-        <div class="eyebrow">
-          <span class="eyebrow-line"></span>
-          Built for your gym
-        </div>
-      </div>
-
-      <div class="fu">
         <h1>Your gym. <span class="green">Growing itself</span> while you coach.</h1>
       </div>
 
       <div class="fu">
-        <p class="subtext">
-          Watch the 90-second breakdown, then drop your details and see exactly what happens to every enquiry your gym gets — live on your own website.
-        </p>
+        <p class="subtext">Watch the 90-second breakdown, then see it live on your gym's site.</p>
       </div>
 
       <!-- ══ 90-SECOND VSL ══
@@ -515,9 +506,8 @@
 
     /* ────────────────────────────────────────────────────────────
        VSL PLAY BUTTON
-       Clicking is a user gesture, so the video plays WITH sound
-       (browsers block sound-on autoplay, which is why a VSL uses a
-       poster + tap-to-play rather than autoplay).
+       No native controls — custom play button only. Tap the video
+       while playing to pause; play button reappears automatically.
     ──────────────────────────────────────────────────────────── */
     const vsl      = document.getElementById('vsl');
     const vslVideo = document.getElementById('vslVideo');
@@ -525,13 +515,20 @@
     if (vslPlay) {
       vslPlay.addEventListener('click', function () {
         vsl.classList.add('playing');
-        vslVideo.setAttribute('controls', '');  // give them controls once it's playing
-        const playing = vslVideo.play();
-        if (playing && playing.catch) { playing.catch(function(){}); }
+        const p = vslVideo.play();
+        if (p && p.catch) { p.catch(function(){}); }
+      });
+      // Tap video to pause; play button slides back in
+      vslVideo.addEventListener('click', function () {
+        if (!vslVideo.paused) {
+          vslVideo.pause();
+        }
+      });
+      vslVideo.addEventListener('pause', function () {
+        vsl.classList.remove('playing');
       });
       vslVideo.addEventListener('ended', function () {
-        vsl.classList.remove('playing');         // show the poster + replay button again
-        vslVideo.removeAttribute('controls');
+        vsl.classList.remove('playing');
       });
     }
 
