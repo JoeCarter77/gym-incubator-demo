@@ -97,26 +97,6 @@
       max-width: 480px;
     }
 
-    .eyebrow {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-family: var(--font-body);
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--green);
-      margin-bottom: 16px;
-    }
-
-    .eyebrow-line {
-      width: 28px;
-      height: 1.5px;
-      background: var(--green);
-      flex-shrink: 0;
-    }
-
     h1 {
       font-family: var(--font-display);
       font-size: clamp(1.8rem, 4vw, 2.5rem);
@@ -145,22 +125,49 @@
       overflow: hidden;
       border: 1px solid var(--border);
       background: #000;
-      aspect-ratio: 16 / 9;        /* matches a normal landscape film; change to 9/16 if you film vertical */
+      padding: 56.25% 0 0 0; /* 16:9 ratio */
     }
 
-    .vsl video {
+    .vsl iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
       width: 100%;
       height: 100%;
-      display: block;
-      object-fit: cover;
-      background: #000;
+      border: 0;
     }
 
-    /* big play button overlay */
-    .vsl-play {
+    /* Thumbnail overlay */
+    .vsl-thumb {
       position: absolute;
       inset: 0;
-      margin: auto;
+      z-index: 2;
+      cursor: pointer;
+      background-size: cover;
+      background-position: center;
+      background-image: url('https://gym-incubator-demo.vercel.app/thumbnail.jpg');
+      transition: opacity 0.3s ease;
+    }
+
+    .vsl-thumb.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* dark scrim */
+    .vsl-thumb::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.28);
+    }
+
+    /* play button */
+    .vsl-play {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
       width: 68px;
       height: 68px;
       border-radius: 50%;
@@ -170,26 +177,13 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding-left: 5px;            /* nudge so the triangle looks centred */
+      padding-left: 5px;
       box-shadow: 0 8px 34px rgba(170,238,0,0.45);
-      transition: transform 0.16s ease, opacity 0.25s ease;
+      transition: transform 0.16s ease;
       z-index: 3;
     }
-    .vsl-play:hover  { transform: scale(1.08); }
-    .vsl-play:active { transform: scale(0.94); }
-    .vsl.playing .vsl-play { opacity: 0; pointer-events: none; }
-
-    /* subtle dark scrim over the poster so the play button always pops */
-    .vsl::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: rgba(0,0,0,0.28);
-      pointer-events: none;
-      transition: opacity 0.25s ease;
-      z-index: 2;
-    }
-    .vsl.playing::after { opacity: 0; }
+    .vsl-play:hover  { transform: translate(-50%, -50%) scale(1.08); }
+    .vsl-play:active { transform: translate(-50%, -50%) scale(0.94); }
 
     .vsl-caption {
       position: absolute;
@@ -201,10 +195,8 @@
       color: rgba(255,255,255,0.85);
       text-shadow: 0 1px 8px rgba(0,0,0,0.7);
       pointer-events: none;
-      transition: opacity 0.25s ease;
       z-index: 3;
     }
-    .vsl.playing .vsl-caption { opacity: 0; }
 
     /* ── FORM ── */
     label {
@@ -379,24 +371,24 @@
         <p class="subtext">Watch the 90-second breakdown, then see it live on your gym's site.</p>
       </div>
 
-      <!-- ══ 90-SECOND VSL ══
-           Replace the two placeholders below:
-           1. poster="..."  → a still frame / branded thumbnail (strong poster = more plays)
-           2. <source src="..."> → your mp4 (self-hosted) OR swap this whole <video> for an embed (see notes)
-      -->
       <div class="fu">
         <div class="vsl" id="vsl">
-          <video id="vslVideo"
-                 playsinline
-                 preload="metadata"
-                 poster="POSTER_IMAGE_URL">
-            <source src="VIDEO_MP4_URL" type="video/mp4" />
-            Your browser does not support video playback.
-          </video>
-          <div class="vsl-caption">▶ Watch: 6 leads a month → 90 new members in 90 days</div>
-          <button class="vsl-play" id="vslPlay" aria-label="Play video">
-            <svg viewBox="0 0 24 24" width="30" height="30" fill="#000"><path d="M8 5v14l11-7z"/></svg>
-          </button>
+          <!-- Vimeo iframe — hidden until play is clicked -->
+          <iframe
+            id="vslIframe"
+            src="https://player.vimeo.com/video/1198563416?badge=0&autopause=0&player_id=0&app_id=58479&autoplay=0"
+            frameborder="0"
+            allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
+            referrerpolicy="strict-origin-when-cross-origin"
+            title="Gym Incubator — 90 Second Breakdown">
+          </iframe>
+          <!-- Thumbnail overlay with play button — hides on click -->
+          <div class="vsl-thumb" id="vslThumb">
+            <button class="vsl-play" id="vslPlay" aria-label="Play video">
+              <svg viewBox="0 0 24 24" width="30" height="30" fill="#000"><path d="M8 5v14l11-7z"/></svg>
+            </button>
+            <div class="vsl-caption">▶ Watch: 6 leads a month → 90 new members in 90 days</div>
+          </div>
         </div>
       </div>
 
@@ -462,21 +454,25 @@
     </div>
   </main>
 
+  <script src="https://player.vimeo.com/api/player.js"></script>
   <script>
     const DEMO_BASE   = 'https://gym-incubator-demo.vercel.app/';
-    const GHL_WEBHOOK = ''; // paste your GHL webhook URL here
+    const GHL_WEBHOOK = 'https://services.leadconnectorhq.com/hooks/TuuP0rHlr8x4keEW9mm6/webhook-trigger/9db41b6e-11c7-4637-98e8-9d553baa90d6';
 
-    /* ────────────────────────────────────────────────────────────
-       SCREENSHOT PRE-WARM
-       thum.io renders a site's screenshot on first request (slow),
-       then caches it (fast). We fire that render here, as early as
-       possible, so by the time the demo page loads the image is
-       already cached and appears almost instantly.
+    /* ── THUMBNAIL PLAY BUTTON ── */
+    const vslThumb = document.getElementById('vslThumb');
+    const vslPlay  = document.getElementById('vslPlay');
+    const iframe   = document.getElementById('vslIframe');
 
-       IMPORTANT: these URLs must match the demo page's thum.io URLs
-       EXACTLY (same width/crop/path), or you warm a different cache
-       key and it does nothing.
-    ──────────────────────────────────────────────────────────── */
+    vslPlay.addEventListener('click', function () {
+      // Hide the thumbnail
+      vslThumb.classList.add('hidden');
+      // Autoplay via Vimeo Player API
+      const player = new Vimeo.Player(iframe);
+      player.play().catch(function(){});
+    });
+
+    /* ── SCREENSHOT PRE-WARM ── */
     let lastWarmed = '';
 
     function buildUrl(raw) {
@@ -487,8 +483,6 @@
     function prewarm(url) {
       if (!url || url === lastWarmed) return;
       lastWarmed = url;
-      // Same device that submits is the device that views the demo,
-      // so only warm the size the demo will actually request.
       const isMobile = window.matchMedia('(max-width: 980px)').matches;
       const variant  = isMobile
         ? 'width/390/crop/844/noanimate/'
@@ -496,45 +490,12 @@
       new Image().src = 'https://image.thum.io/get/' + variant + url;
     }
 
-    // Fire the render the instant they finish typing the URL — this is
-    // the biggest win: thum.io gets a head start of several seconds
-    // before they even hit the button.
     const urlField = document.getElementById('websiteUrl');
     urlField.addEventListener('blur', function () {
       prewarm(buildUrl(urlField.value.trim()));
     });
 
-    /* ────────────────────────────────────────────────────────────
-       VSL PLAY BUTTON
-       No native controls — custom play button only. Tap the video
-       while playing to pause; play button reappears automatically.
-    ──────────────────────────────────────────────────────────── */
-    const vsl      = document.getElementById('vsl');
-    const vslVideo = document.getElementById('vslVideo');
-    const vslPlay  = document.getElementById('vslPlay');
-    if (vslPlay) {
-      vslPlay.addEventListener('click', function () {
-        vsl.classList.add('playing');
-        const p = vslVideo.play();
-        if (p && p.catch) { p.catch(function(){}); }
-      });
-      // Tap video to pause; play button slides back in
-      vslVideo.addEventListener('click', function () {
-        if (!vslVideo.paused) {
-          vslVideo.pause();
-        }
-      });
-      vslVideo.addEventListener('pause', function () {
-        vsl.classList.remove('playing');
-      });
-      vslVideo.addEventListener('ended', function () {
-        vsl.classList.remove('playing');
-      });
-    }
-
-    /* ────────────────────────────────────────────────────────────
-       FORM SUBMIT
-    ──────────────────────────────────────────────────────────── */
+    /* ── FORM SUBMIT ── */
     const form = document.getElementById('captureForm');
     const btn  = document.getElementById('submitBtn');
 
@@ -545,10 +506,10 @@
     form.addEventListener('submit', async function(e) {
       e.preventDefault();
 
-      const fn  = document.getElementById('firstName').value.trim();
-      const gn  = document.getElementById('gymName').value.trim();
-      const raw = document.getElementById('websiteUrl').value.trim();
-      const url = buildUrl(raw);
+      const fn    = document.getElementById('firstName').value.trim();
+      const gn    = document.getElementById('gymName').value.trim();
+      const raw   = document.getElementById('websiteUrl').value.trim();
+      const url   = buildUrl(raw);
       const clean = raw.replace(/^(https?:\/\/)?(www\.)?/, '').trim();
 
       showErr('firstNameErr', false);
@@ -563,25 +524,19 @@
 
       btn.classList.add('loading');
 
-      // Backstop pre-warm in case they never blurred the field
-      // (e.g. submitted via Enter straight after typing).
       prewarm(url);
 
       // Fire GHL webhook non-blocking
-      if (GHL_WEBHOOK) {
-        fetch(GHL_WEBHOOK, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ first_name: fn, company: gn, url: url, source: 'ad-capture' })
-        }).catch(function(){});
-      }
+      fetch(GHL_WEBHOOK, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ first_name: fn, company: gn, url: url, source: 'ad-capture' })
+      }).catch(function(){});
 
-      // Keep url raw so https:// isn't double-encoded by the demo page
       const paramStr = 'first_name=' + encodeURIComponent(fn)
                      + '&company='   + encodeURIComponent(gn)
                      + '&url='       + url;
 
-      // Small delay gives the pre-warm a moment to register before we navigate.
       await new Promise(function(r){ setTimeout(r, 450); });
       window.location.href = DEMO_BASE + '?' + paramStr;
     });
