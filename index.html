@@ -1103,8 +1103,8 @@
     function toggleChat() { chatOpen = !chatOpen; document.getElementById('ibb').classList.toggle('open', chatOpen); document.getElementById('ibp').classList.toggle('open', chatOpen); document.getElementById('ibb-badge').classList.add('hidden'); }
     function toggleChatPhone() { chatOpenPhone = !chatOpenPhone; document.getElementById('ibb-phone').classList.toggle('open', chatOpenPhone); document.getElementById('ibp-phone').classList.toggle('open', chatOpenPhone); document.getElementById('ibb-badge-phone').classList.add('hidden'); }
 
-    function selectMode(mode) { selectedMode = mode; document.getElementById('contact-title').textContent = mode === 'voice' ? 'One sec before we connect…' : 'Before we start…'; document.getElementById('contact-start-btn').textContent = mode === 'voice' ? 'Start Voice Call →' : 'Start Chat →'; showScreen('contact'); setTimeout(function() { document.getElementById('contact-name').focus(); }, 80); }
-    function selectModePhone(mode) { selectedModePhone = mode; document.getElementById('contact-title-phone').textContent = mode === 'voice' ? 'One sec before we connect…' : 'Before we start…'; document.getElementById('contact-start-btn-phone').textContent = mode === 'voice' ? 'Start Voice Call →' : 'Start Chat →'; showScreenPhone('contact'); setTimeout(function() { document.getElementById('contact-name-phone').focus(); }, 80); }
+    function selectMode(mode) { selectedMode = mode; if (mode === 'voice') { showScreen('voice'); startVoiceCall(); } else { showScreen('chat'); initChat('there'); } }
+    function selectModePhone(mode) { selectedModePhone = mode; if (mode === 'voice') { showScreenPhone('voice'); startVoiceCallPhone(); } else { showScreenPhone('chat'); initChatPhone('there'); } }
 
     function goBack() { showScreen('mode'); }
     function goBackPhone() { showScreenPhone('mode'); }
