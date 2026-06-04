@@ -87,9 +87,9 @@
     main {
       flex: 1;
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: center;
-      padding: 64px 24px;
+      padding: 36px 24px 64px;
     }
 
     .container {
@@ -107,7 +107,7 @@
       letter-spacing: 0.12em;
       text-transform: uppercase;
       color: var(--green);
-      margin-bottom: 20px;
+      margin-bottom: 16px;
     }
 
     .eyebrow-line {
@@ -119,22 +119,22 @@
 
     h1 {
       font-family: var(--font-display);
-      font-size: clamp(2.2rem, 3.6vw, 3.4rem);
+      font-size: clamp(1.8rem, 4vw, 2.5rem);
       font-weight: 800;
-      line-height: 1.05;
+      line-height: 1.08;
       letter-spacing: -0.035em;
       color: var(--white);
-      margin-bottom: 20px;
+      margin-bottom: 16px;
     }
 
     h1 .green { color: var(--green); }
 
     .subtext {
-      font-size: 15px;
-      line-height: 1.65;
+      font-size: 14px;
+      line-height: 1.6;
       color: var(--muted);
       font-weight: 300;
-      margin-bottom: 28px;
+      margin-bottom: 24px;
     }
 
     /* ── VSL VIDEO ── */
@@ -349,7 +349,7 @@
 
     @media(max-width:480px){
       nav { padding: 0 20px; }
-      main { padding: 44px 20px; }
+      main { padding: 28px 20px 48px; }
       .stats { gap: 12px; }
       .stat-num { font-size: 22px; }
     }
