@@ -46,7 +46,6 @@
       z-index: 10;
     }
 
-    /* Logo matches demo exactly: "GYM" white, "INCUBATOR" green, bold spaced caps */
     .logo {
       font-family: var(--font-body);
       font-weight: 700;
@@ -98,7 +97,6 @@
       max-width: 480px;
     }
 
-    /* Eyebrow — matches the "PERSONALISED FOR YOUR GYM" tag style on demo */
     .eyebrow {
       display: flex;
       align-items: center;
@@ -119,7 +117,6 @@
       flex-shrink: 0;
     }
 
-    /* Heading — Anton, massive, matches demo heading weight */
     h1 {
       font-family: var(--font-display);
       font-size: clamp(2.2rem, 3.6vw, 3.4rem);
@@ -137,8 +134,77 @@
       line-height: 1.65;
       color: var(--muted);
       font-weight: 300;
-      margin-bottom: 36px;
+      margin-bottom: 28px;
     }
+
+    /* ── VSL VIDEO ── */
+    .vsl {
+      position: relative;
+      margin-bottom: 32px;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: #000;
+      aspect-ratio: 16 / 9;        /* matches a normal landscape film; change to 9/16 if you film vertical */
+    }
+
+    .vsl video {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+      background: #000;
+    }
+
+    /* big play button overlay */
+    .vsl-play {
+      position: absolute;
+      inset: 0;
+      margin: auto;
+      width: 68px;
+      height: 68px;
+      border-radius: 50%;
+      background: var(--green);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding-left: 5px;            /* nudge so the triangle looks centred */
+      box-shadow: 0 8px 34px rgba(170,238,0,0.45);
+      transition: transform 0.16s ease, opacity 0.25s ease;
+      z-index: 3;
+    }
+    .vsl-play:hover  { transform: scale(1.08); }
+    .vsl-play:active { transform: scale(0.94); }
+    .vsl.playing .vsl-play { opacity: 0; pointer-events: none; }
+
+    /* subtle dark scrim over the poster so the play button always pops */
+    .vsl::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.28);
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+      z-index: 2;
+    }
+    .vsl.playing::after { opacity: 0; }
+
+    .vsl-caption {
+      position: absolute;
+      left: 0; right: 0; bottom: 14px;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      color: rgba(255,255,255,0.85);
+      text-shadow: 0 1px 8px rgba(0,0,0,0.7);
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+      z-index: 3;
+    }
+    .vsl.playing .vsl-caption { opacity: 0; }
 
     /* ── FORM ── */
     label {
@@ -185,10 +251,10 @@
     }
     .error-msg.show { display: block; }
 
-    /* ── BUTTON — matches demo's big green CTA ── */
+    /* ── BUTTON ── */
     .cta-wrap { margin-top: 24px; }
 
-    button {
+    button.submit {
       width: 100%;
       background: var(--green);
       color: #000;
@@ -209,15 +275,15 @@
       transition: opacity 0.15s, transform 0.15s;
     }
 
-    button:hover { opacity: 0.9; transform: translateY(-1px); }
-    button:active { transform: translateY(0); }
+    button.submit:hover { opacity: 0.9; transform: translateY(-1px); }
+    button.submit:active { transform: translateY(0); }
 
     .btn-arrow { transition: transform 0.18s; font-size: 16px; }
-    button:hover .btn-arrow { transform: translateX(4px); }
+    button.submit:hover .btn-arrow { transform: translateX(4px); }
 
-    button.loading { opacity: 0.6; pointer-events: none; }
-    button.loading .btn-inner { opacity: 0; }
-    button.loading::after {
+    button.submit.loading { opacity: 0.6; pointer-events: none; }
+    button.submit.loading .btn-inner { opacity: 0; }
+    button.submit.loading::after {
       content: '';
       position: absolute;
       width: 18px; height: 18px;
@@ -278,6 +344,7 @@
     .fu:nth-child(5){animation-delay:0.28s}
     .fu:nth-child(6){animation-delay:0.34s}
     .fu:nth-child(7){animation-delay:0.40s}
+    .fu:nth-child(8){animation-delay:0.46s}
     @keyframes up { to { opacity:1; transform:translateY(0); } }
 
     @media(max-width:480px){
@@ -317,8 +384,29 @@
 
       <div class="fu">
         <p class="subtext">
-          Drop your details and we'll pull your website, build your system, and show you exactly what happens to every enquiry your gym gets — starting right now.
+          Watch the 90-second breakdown, then drop your details and see exactly what happens to every enquiry your gym gets — live on your own website.
         </p>
+      </div>
+
+      <!-- ══ 90-SECOND VSL ══
+           Replace the two placeholders below:
+           1. poster="..."  → a still frame / branded thumbnail (strong poster = more plays)
+           2. <source src="..."> → your mp4 (self-hosted) OR swap this whole <video> for an embed (see notes)
+      -->
+      <div class="fu">
+        <div class="vsl" id="vsl">
+          <video id="vslVideo"
+                 playsinline
+                 preload="metadata"
+                 poster="POSTER_IMAGE_URL">
+            <source src="VIDEO_MP4_URL" type="video/mp4" />
+            Your browser does not support video playback.
+          </video>
+          <div class="vsl-caption">▶ Watch: 6 leads a month → 90 new members in 90 days</div>
+          <button class="vsl-play" id="vslPlay" aria-label="Play video">
+            <svg viewBox="0 0 24 24" width="30" height="30" fill="#000"><path d="M8 5v14l11-7z"/></svg>
+          </button>
+        </div>
       </div>
 
       <form id="captureForm" novalidate>
@@ -352,9 +440,9 @@
 
         <div class="fu">
           <div class="cta-wrap">
-            <button type="submit" id="submitBtn">
+            <button type="submit" class="submit" id="submitBtn">
               <span class="btn-inner" style="display:flex;align-items:center;gap:9px">
-                Show me the system <span class="btn-arrow">→</span>
+                See it live on my gym's website <span class="btn-arrow">→</span>
               </span>
             </button>
           </div>
@@ -387,6 +475,69 @@
     const DEMO_BASE   = 'https://gym-incubator-demo.vercel.app/';
     const GHL_WEBHOOK = ''; // paste your GHL webhook URL here
 
+    /* ────────────────────────────────────────────────────────────
+       SCREENSHOT PRE-WARM
+       thum.io renders a site's screenshot on first request (slow),
+       then caches it (fast). We fire that render here, as early as
+       possible, so by the time the demo page loads the image is
+       already cached and appears almost instantly.
+
+       IMPORTANT: these URLs must match the demo page's thum.io URLs
+       EXACTLY (same width/crop/path), or you warm a different cache
+       key and it does nothing.
+    ──────────────────────────────────────────────────────────── */
+    let lastWarmed = '';
+
+    function buildUrl(raw) {
+      const clean = raw.replace(/^(https?:\/\/)?(www\.)?/, '').trim();
+      return clean ? 'https://www.' + clean : '';
+    }
+
+    function prewarm(url) {
+      if (!url || url === lastWarmed) return;
+      lastWarmed = url;
+      // Same device that submits is the device that views the demo,
+      // so only warm the size the demo will actually request.
+      const isMobile = window.matchMedia('(max-width: 980px)').matches;
+      const variant  = isMobile
+        ? 'width/390/crop/844/noanimate/'
+        : 'width/1280/crop/900/noanimate/';
+      new Image().src = 'https://image.thum.io/get/' + variant + url;
+    }
+
+    // Fire the render the instant they finish typing the URL — this is
+    // the biggest win: thum.io gets a head start of several seconds
+    // before they even hit the button.
+    const urlField = document.getElementById('websiteUrl');
+    urlField.addEventListener('blur', function () {
+      prewarm(buildUrl(urlField.value.trim()));
+    });
+
+    /* ────────────────────────────────────────────────────────────
+       VSL PLAY BUTTON
+       Clicking is a user gesture, so the video plays WITH sound
+       (browsers block sound-on autoplay, which is why a VSL uses a
+       poster + tap-to-play rather than autoplay).
+    ──────────────────────────────────────────────────────────── */
+    const vsl      = document.getElementById('vsl');
+    const vslVideo = document.getElementById('vslVideo');
+    const vslPlay  = document.getElementById('vslPlay');
+    if (vslPlay) {
+      vslPlay.addEventListener('click', function () {
+        vsl.classList.add('playing');
+        vslVideo.setAttribute('controls', '');  // give them controls once it's playing
+        const playing = vslVideo.play();
+        if (playing && playing.catch) { playing.catch(function(){}); }
+      });
+      vslVideo.addEventListener('ended', function () {
+        vsl.classList.remove('playing');         // show the poster + replay button again
+        vslVideo.removeAttribute('controls');
+      });
+    }
+
+    /* ────────────────────────────────────────────────────────────
+       FORM SUBMIT
+    ──────────────────────────────────────────────────────────── */
     const form = document.getElementById('captureForm');
     const btn  = document.getElementById('submitBtn');
 
@@ -400,12 +551,9 @@
       const fn  = document.getElementById('firstName').value.trim();
       const gn  = document.getElementById('gymName').value.trim();
       const raw = document.getElementById('websiteUrl').value.trim();
-
-      // Build full URL from whatever they typed after https://www.
+      const url = buildUrl(raw);
       const clean = raw.replace(/^(https?:\/\/)?(www\.)?/, '').trim();
-      const url   = clean ? 'https://www.' + clean : '';
 
-      // Reset errors
       showErr('firstNameErr', false);
       showErr('gymNameErr',   false);
       showErr('urlErr',       false);
@@ -418,6 +566,10 @@
 
       btn.classList.add('loading');
 
+      // Backstop pre-warm in case they never blurred the field
+      // (e.g. submitted via Enter straight after typing).
+      prewarm(url);
+
       // Fire GHL webhook non-blocking
       if (GHL_WEBHOOK) {
         fetch(GHL_WEBHOOK, {
@@ -427,12 +579,13 @@
         }).catch(function(){});
       }
 
-      // Build redirect URL — encode name/company but keep url raw so https:// isn't double-encoded
+      // Keep url raw so https:// isn't double-encoded by the demo page
       const paramStr = 'first_name=' + encodeURIComponent(fn)
                      + '&company='   + encodeURIComponent(gn)
                      + '&url='       + url;
 
-      await new Promise(function(r){ setTimeout(r, 380); });
+      // Small delay gives the pre-warm a moment to register before we navigate.
+      await new Promise(function(r){ setTimeout(r, 450); });
       window.location.href = DEMO_BASE + '?' + paramStr;
     });
   </script>
